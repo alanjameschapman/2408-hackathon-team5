@@ -1,4 +1,4 @@
-# Team Name goes here
+# 🏁 *RETRO RACERS* 🏁
 
 Responsive Screenshot(s) here
 
@@ -6,13 +6,11 @@ Project Overview
 
 Live deployment link can be found [here](TBC).
 
-# Table of Contents
-
-1. [Project Goals](#project-goals "ProjectGoals")
+Please use GitHub's burger bun to navigate between sections.
 
 # Agile Development
 
-The project was developed and [documented](docs/AGILE.md) using Agile principles throughout.
+The project was developed using Agile principles throughout. Minutes [here](#minutes "Minutes").
 
 # User Experience
 
@@ -193,10 +191,10 @@ User inputs were validated for various incorrect inputs throughout the project. 
 
 The responsiveness to different screen sizes was checked throughout the project. Results for MVP and final site are shown below, the main visual difference being fonts.
 
-| Stage | iPhone 6/7/8 | iPad | Laptop
-| :-: | :-: | :-: | :-: |
-| MVP | ![mvpiphone678](/docs/testing/response/mvpiphone678.png) | ![mvpiad](/docs/testing/response/mvpipadair.png) | ![MVPMacBookAir](/docs/testing/response/mvpmacbookair.png)
-| Final | ![finaliphone678](/docs/testing/response/finaliphone678.png) | ![finalipad](/docs/testing/response/finalipadair.png) | ![finalMacBookAir](/docs/testing/response/finalmacbookair.png)
+| Stage | Laptop | Desktop
+| :-: | :-: | :-: |
+| MVP | ![mvplaptop](/docs/testing/response/mvplaptop.png) | ![mvpdesktop](/docs/testing/response/mvpdesktop.png)
+| Final | ![finallaptop](/docs/testing/response/finallaptop.png) | ![finaldesktop](/docs/testing/response/finaldesktop.png)
 
 ### Browser Compatibility
 
@@ -266,12 +264,21 @@ CSS was validated by direct input using [jigsaw W3C Validation Service](https://
 | :-: | :-: | :-: | :-: |
 | [comments](/staticfiles/js/comments.js) | ![comments.js](/docs/testing/comments-js.png) | One warning about a function 'getCookie' declared in a loop referencing an outer scoped variable. Reviewed but syntax deemed not difficult to understand. | &check; |
 
-## Credits
+# Agile
 
-### Media
+## Minutes
+
+| Meeting | Minutes | Actions
+| - | - | - |
+| Thu, 10AM | - EA shared concept ideas as discussed at KO meeting.<br/> - Agreed on micro-machines-style game i.e. bird's-eye view of racing car(s) around a track with obstacles and power-ups (oil-slicks, magnets etc.)<br/> - Three.js framework to be used.<br/> - MVP deployment Friday PM latest to include track and single car only. | - EA: cars.<br/>- MB: track.<br/>- TG: 8-bit music.<br/>- AC: issues for kanban, agile documentation, then helping elsewhere.
+| Thu, 7PM | | |
+
+# Credits
+
+## Media
 
 The favicon is courtesy of [Somebody via Flaticon or similar](link here).
 
-### Acknowledgments
+## Acknowledgments
 
 This project was created in collaboration by [Team Name](https://hackathon.codeinstitute.net/teams/379/): Alan Chapman, Efren Reyes, Mark Butler, Tamas Gavlider.
