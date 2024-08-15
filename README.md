@@ -10,7 +10,7 @@ Please use GitHub's burger bun to navigate between sections.
 
 # Agile Development
 
-The project was developed using Agile principles throughout. Minutes [here](#minutes "Minutes").
+The project was developed using Agile principles throughout. Minutes [here](#minutes "Minutes"). User stories were prioritized using MoSCoW, and the Minimum Viable Product (MVP) was  identified for early deployment.
 
 # User Experience
 
@@ -20,19 +20,19 @@ The five planes of User Experience were used to design the website. This is not 
 
 ## Strategy
 
-Based on the Code Institute Hackathon August 2024 Theme of "Pixel Pioneers", the goal of this platform is to create a retro game. We have chosen a Micro-Machines-style Javascript game.
+Based on the Code Institute Hackathon August 2024 Theme of "Pixel Pioneers", the goal of this platform is to:
+- Make a retro game complete with 8 bit sound effects and music.
+- Use HTML, CSS, JavaScript and JS game framework such as Three.js.
 
-Needs of users were defined as user stories and managed via [GitHub Issues/Projects](https://github.com/users/alanjameschapman/projects/5).
+Following an initial brainstorm of possible games, a plan-view racing game concept was chosen, similar to the original Micro-Machines video game, developed by Codemasters for the NES.
+
+Needs of users were defined as user stories and managed via [GitHub Issues/Projects](https://github.com/users/alanjameschapman/projects/7).
 
 ## Scope
 
-Following an initial brainstorm of desired and possible functionality, user stories were tabulated. These were grouped into Epics and Themes for Agile purposes, categorized using MoSCoW, and allocated Story Points (representing amount of work required to implement). By assigning values 1, 2 and 3 to M, S and C respectively, and multiplying by the number of Story Points, functionality could be prioritized and the Minimum Viable Product (MVP) could be identified:
+Once the game was chosen, existing online games were researched to help identify what would be included in the scope of the project. Possible features were identified and converted to user stories within GitHub projects.
 
 <img src="https://github.com/alanjameschapman/whiteboard/raw/main/docs/screenshots/mvp.png" alt="mvp" width="800"/>
-
-A review of [edublogs](https://edublogs.org/) which appears to be the dominant platform in educational blogs revealed a few additional features, which were not included in the scope of this project:
-- Archive section of older posts
-- Superuser customisation of page theme, layout, colours, widgets etc.
 
 ## Structure
 
@@ -46,25 +46,19 @@ A review of [edublogs](https://edublogs.org/) which appears to be the dominant p
 
 The user flow diagram helped to develop wireframes for each page using [Balsamiq](https://balsamiq.com/). A laptop-first approach was used, with subsequent layouts for larger screens developed thereafter.
 
-#### Tablet wireframes
+#### Wireframes
 
-The main difference for the tablet layout is for the home page, where the posts are displayed in a 3x3 grid.
-
-![wireframes](/docs/wireframes/wireframes-tablet.png)
-
-#### Desktop wireframes
-
-After assessing the wireframes, it was decided that the desktop would follow the same layouts for all pages as the tablet, but with more space between elements. Therefore, it was not necessary to create separate wireframes for the desktop.
+After assessing the wireframes, it was decided that the desktop would follow the same layouts for all pages as the laptop, but with more space between elements.
 
 ### Navigation Design
 
-Whilst developing these wireframes, it was concluded that site navigation would be best served by a navbar on each page, with the following links: home, logout and post creation.
+Whilst developing these wireframes, it was concluded that site navigation would be best served by a navbar on each page, with the following links: home, race, settings and high scores.
 
 ## Surface
 
 ### Colour schemes
 
-The colour scheme is based on...
+The colour scheme is based on the original Micro Machines video game cover.
 
 <img src="https://github.com/alanjameschapman/whiteboard/raw/main/static/images/default.jpg" alt="default image" width="500"/>
 
@@ -92,9 +86,7 @@ The colour combination was regenerated until the three colours generated a posit
 
 ### Navbar and Footer (all pages)
 
-The navbar and footer are present on all pages and are responsive to different screen sizes.
-
-The navbar is not fixed to the top of the page because it is not necessary to be visible at all times. To minimise user clicks, a 'burger bun' is not used because there is enough space to display the logo and links, even for mobile devices.
+The navbar and footer are fixed and present on all pages and are responsive to different screen sizes, to make them visible at all times.
 
 | Screenshot |
 | :-: |
@@ -198,15 +190,14 @@ The responsiveness to different screen sizes was checked throughout the project.
 
 ### Browser Compatibility
 
-Browser compatibility was tested throughout the project as shown below. Using this [MDN guide](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Introduction) as a reference, the following was testing in each browser:
+Browser compatibility was tested using this [MDN guide](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Introduction) as a reference. The following was testing in each browser:
 - Functionality, navigation and hyperlinks
 - Responsiveness
 - Aesthetics
 
-| Stage | Chrome | Firefox | Safari
-| :-: | :-: | :-: | :-: |
-| MVP | &check; | &check; | &check; |
-| Final | &check; | &check; | &check; |
+| Chrome | Firefox | Safari
+| :-: | :-: | :-: |
+| &check; | &check; | &check; |
 
 ### Bugs
 
@@ -230,7 +221,7 @@ The only unresolved bug is the password reset not working. This does not affect 
 
 The WAVE Web Accessibility Evaluation Tool was used throughout the project to check for accessibility issues. Lighthouse was then used to test the performance, accessibility, best practices and SEO of the deployed site. The PWA score not showing is a [known feature](https://stackoverflow.com/questions/60603960/why-lighthouse-pwa-score-is-blank-even-though-the-page-is-audited).
 
-Page | Mobile | Desktop | Comment |
+Page | Laptop | Desktop | Comment |
 | :-: | :-: | :-: | :-: |
 | [register](https://whiteboard-app-742f545f1848.herokuapp.com/accounts/signup/) | ![register-mobile](/docs/testing/lighthouse/register-mobile.png) | ![register-desktop](/docs/testing/lighthouse/register-desktop.png) | None |
 
