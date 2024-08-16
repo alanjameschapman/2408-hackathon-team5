@@ -186,20 +186,33 @@ const carShapePoints = {
     28: [-3, -4],
     29: [-3, -6]
 }
-const carShape = new THREE.Shape();
-
-carShape.moveTo( x , y * factor );
-for (let i in carShapePoints){
-    // console.log(carShapePoints[carPoint][0]);
-    carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
+function createCar(opponent){
+    /*
+    Function creates a car shape and returns mesh
+    */
+    const carShape = new THREE.Shape();
+    carShape.moveTo( x , y * factor );
+    for (let i in carShapePoints){
+        // console.log(carShapePoints[i]);
+        carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
+    }
+    const geometry = new THREE.ShapeGeometry( carShape );
+    let material;
+    if (opponent === true) {
+        material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    } else{
+        material = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+    }
+    const car = new THREE.Mesh( geometry, material ) ;
+    return car;
 }
 
-
-const geometry = new THREE.ShapeGeometry( carShape );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const car = new THREE.Mesh( geometry, material ) ;
-scene.add( car );
-
+carOne = createCar(true);
+scene.add( carOne );
+let carPositionOne = 0;
+carTwo = createCar(false);
+scene.add( carTwo );
+let carPositionTwo = 0.02;
 // Set camera position
 camera.position.set(0, 100, 200);
 camera.lookAt(0, 0, 0);
@@ -209,11 +222,18 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Move the car along the curve
-    carPosition += 0.001;
-    if (carPosition > 1) carPosition = 0;
-    const carPoint = curve.getPointAt(carPosition);
-    const carYOffset = Math.sin(carPosition * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    car.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road
+    carPositionOne += 0.001;
+    if (carPositionOne > 1) carPositionOne = 0;
+    const carPoint = curve.getPointAt(carPositionOne);
+    const carYOffset = Math.sin(carPositionOne * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road
+
+    // Move the car two along the curve
+    carPositionTwo += 0.001;
+    if (carPositionTwo> 1) carPositionTwo = 0;
+    const carPointTwo = curve.getPointAt(carPositionTwo);
+    const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
 
     // // Dynamically adjust the camera's height to ensure the car is always visible
     // let cameraHeight = car.position.y + 50;
