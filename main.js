@@ -196,6 +196,57 @@ scene.add(middleLine);
 // const car = new THREE.Mesh(carGeometry, carMaterial);
 // scene.add(car);
 
+// let carPosition = 0;
+
+// Create border and middle lines
+/* const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
+const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); // White dashed line
+
+const leftBorderPoints = [];
+const rightBorderPoints = [];
+const middleLinePoints = [];
+
+for (let i = 0; i <= roadSegments; i++) {
+    const t = i / roadSegments;
+    const point = curve.getPointAt(t);
+    const tangent = curve.getTangentAt(t).normalize();
+    const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
+
+    // Apply the same increased amplitude to the borders and middle line
+    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
+
+    const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
+    const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
+    const middlePoint = point.clone();
+    leftBorderPoint.y += yOffset;
+    rightBorderPoint.y += yOffset;
+    middlePoint.y += yOffset;
+
+    leftBorderPoints.push(leftBorderPoint);
+    rightBorderPoints.push(rightBorderPoint);
+    middleLinePoints.push(middlePoint);
+}
+
+const leftBorderGeometry = new THREE.BufferGeometry().setFromPoints(leftBorderPoints);
+const rightBorderGeometry = new THREE.BufferGeometry().setFromPoints(rightBorderPoints);
+const middleLineGeometry = new THREE.BufferGeometry().setFromPoints(middleLinePoints);
+
+const leftBorder = new THREE.Line(leftBorderGeometry, borderMaterial);
+const rightBorder = new THREE.Line(rightBorderGeometry, borderMaterial);
+const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial); */
+
+middleLine.computeLineDistances(); // Required for dashed lines to appear correctly
+
+scene.add(leftBorder);
+scene.add(rightBorder);
+scene.add(middleLine);
+
+// Create a car object
+// const carGeometry = new THREE.BoxGeometry(2, 2, 4);
+// const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+// const car = new THREE.Mesh(carGeometry, carMaterial);
+// scene.add(car);
+
 let carPosition = 0;
 
 const x = 0, y = -9;
