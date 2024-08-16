@@ -5,6 +5,21 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Added AudioListener to the camera after scene is created
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// Function to load sound
+function loadSound(fileName){
+    const sound = new THREE.Audio(listener);
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load(`path/to/your/sounds/${fileName}`, function(buffer) {
+        sound.setBuffer(buffer);
+        sound.setLoop(false); // Adjust based on whether you want the sound to loop
+        sound.setVolume(0.5); // Adjust the volume
+    });
+};
+
 // Function to generate control points
 function generateControlPoints(numPoints, range) {
     const points = [];
