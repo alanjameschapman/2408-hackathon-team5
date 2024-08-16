@@ -158,6 +158,50 @@ scene.add(middleLine);
 camera.position.set(0, 100, 200);
 camera.lookAt(0, 0, 0);
 
+function createCar(x, y, factor){
+    /*
+    Function takes position (x, y)
+    and factor (car size) are used to
+    create a 2D shape mesh
+    */
+    carShape.moveTo( x , y );
+    carShape.lineTo( x + 3 * factor, y + 3 * factor);
+    carShape.lineTo( x + 3 * factor , y + 5 * factor);
+    carShape.lineTo( x + 5 * factor , y + 5 * factor);
+    carShape.lineTo( x + 5 * factor , y + 7 * factor);
+    carShape.lineTo( x + 3 * factor , y + 7 * factor);
+    carShape.lineTo( x + 3 * factor , y + 10 * factor);
+    carShape.lineTo( x + 5 * factor , y + 10 * factor);
+    carShape.lineTo( x + 5 * factor , y + 12 * factor);
+    carShape.lineTo( x + 3 * factor , y + 12 * factor);
+    carShape.lineTo( x + 3 * factor , y + 15 * factor);
+    carShape.lineTo( x + 1 * factor , y + 15 * factor);
+    carShape.lineTo( x + 1 * factor , y + 17 * factor);
+    carShape.lineTo( x + 4 * factor , y + 17 * factor);
+    carShape.lineTo( x + 4 * factor , y + 18 * factor);
+    carShape.lineTo( x - 4 * factor , y + 18 * factor);
+    carShape.lineTo( x - 4 * factor , y + 17 * factor);
+    carShape.lineTo( x - 1 * factor , y + 17 * factor);
+    carShape.lineTo( x - 1 * factor , y + 15 * factor);
+    carShape.lineTo( x - 3 * factor , y + 15 * factor);
+    carShape.lineTo( x - 3 * factor , y + 12 * factor);
+    carShape.lineTo( x - 5 * factor , y + 12 * factor);
+    carShape.lineTo( x - 5 * factor , y + 10 * factor);
+    carShape.lineTo( x - 3 * factor , y + 10 * factor);
+    carShape.lineTo( x - 3 * factor , y + 7 * factor);
+    carShape.lineTo( x - 5 * factor , y + 7 * factor);
+    carShape.lineTo( x - 5 * factor , y + 5 * factor);
+    carShape.lineTo( x - 3 * factor , y + 5 * factor);
+    carShape.lineTo( x - 3 * factor , y + 3 * factor);
+    
+    const geometry = new THREE.ShapeGeometry( carShape );
+    const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    const mesh = new THREE.Mesh( geometry, material ) ;
+    scene.add( mesh );
+
+}
+
+
 // Render the scene
 function animate() {
     requestAnimationFrame(animate);
