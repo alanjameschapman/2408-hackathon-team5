@@ -250,11 +250,19 @@ camera.lookAt(0, 0, 0);
 
 // Render the scene
 function animate() {
+    // Play the start sound once when the game begins
+    if (carPosition === 0) {
+        playSound('readySteadyGo');
+    }
+
     requestAnimationFrame(animate);
 
     // Move the car along the curve
     carPosition += 0.001;
-    if (carPosition > 1) carPosition = 0;
+    if (carPosition > 1) {
+        carPosition = 0;
+        playSound('winner'); // Play winner sound when the car completes a lap
+    }
     const carPoint = curve.getPointAt(carPosition);
     const carYOffset = Math.sin(carPosition * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
     car.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road
@@ -265,7 +273,47 @@ function animate() {
     // camera.position.set(carPoint.x, cameraHeight, carPoint.z + 100);
     // camera.lookAt(car.position);
 
+    /*
+    // Check if the car is hitting the border
+    const roadWidthHalf = roadWidth / 2;
+    if (car.position.x > roadWidthHalf || car.position.x < -roadWidthHalf) {
+        playSound('hitBorder'); // Play border collision sound
+    };
+
+    // Increase car speed at a specific point
+    if (carPosition > 0.5 && carPosition < 0.51) {
+        playSound('speedUp'); // Play speed-up sound
+        carPosition += 0.005; // Speed up for demonstration
+    } else {
+        carPosition += 0.001;
+    }
+    */
+
     // Render scene normally
     renderer.render(scene, camera);
 }
 animate();
+
+/* 
+if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
+    playSound('hitBorder'); // Play the border hit sound
+}
+
+// Assuming there's a section where the car speed increases
+if (carIsSpeedingUp) {
+    playSound('speedUp'); // Play the speed-up sound
+}
+
+if (carPosition >= 0.9 && !finalLapPlayed) { // Assuming final lap is at 90% of the track
+    playSound('finalLap'); // Play the final lap sound
+    finalLapPlayed = true; // To ensure it's only played once
+}
+
+if (carPosition >= 1) { // Assuming the finish line is at position 1 on the curve
+    playSound('winner'); // Play the winner sound
+}
+
+if (playerLost) {
+    playSound('lost'); // Play the lost sound
+}
+*/
