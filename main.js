@@ -199,7 +199,7 @@ scene.add(middleLine);
 // let carPosition = 0;
 
 // Create border and middle lines
-const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
+/* const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
 const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); // White dashed line
 
 const leftBorderPoints = [];
@@ -233,7 +233,7 @@ const middleLineGeometry = new THREE.BufferGeometry().setFromPoints(middleLinePo
 
 const leftBorder = new THREE.Line(leftBorderGeometry, borderMaterial);
 const rightBorder = new THREE.Line(rightBorderGeometry, borderMaterial);
-const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial);
+const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial); */
 
 middleLine.computeLineDistances(); // Required for dashed lines to appear correctly
 
