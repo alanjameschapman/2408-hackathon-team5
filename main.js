@@ -13,7 +13,7 @@ camera.add(listener);
 function loadSound(fileName){
     const sound = new THREE.Audio(listener);
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load(`path/to/your/sounds/${fileName}`, function(buffer) {
+    audioLoader.load(`assets/sound/${fileName}`, function(buffer) {
         sound.setBuffer(buffer);
         sound.setLoop(false); // Adjust based on whether you want the sound to loop
         sound.setVolume(0.5); // Adjust the volume
@@ -23,18 +23,18 @@ function loadSound(fileName){
 
 // Load all your sounds
 const sounds = {
-    finalLap: loadSound('assets/sound/final-lap.mp3'),
-    hitBorder: loadSound('assets/sound/hit-border.mp3'),
-    itemEffect: loadSound('assets/sound/item-effect.mp3'),
-    lost: loadSound('assets/sound/lost.mp3'),
-    mainMenu1: loadSound('assets/sound/main-menu.mp3'),
-    mainMenu2: loadSound('assets/sound/main-menu2.mp3'),
-    mainMenu3: loadSound('assets/sound/main-menu3.mp3'),
-    readySteadyGo: loadSound('assets/sound/ready-steady-go.mp3'),
-    speedUp: loadSound('assets/sound/speed-up.mp3'),
-    speed: loadSound('assets/sound/speed.mp3'),
-    tension: loadSound('assets/sound/tension.mp3'),
-    winner: loadSound('assets/sound/winner.mp3')
+    finalLap: loadSound('final-lap.mp3'),
+    hitBorder: loadSound('hit-border.mp3'),
+    itemEffect: loadSound('item-effect.mp3'),
+    lost: loadSound('lost.mp3'),
+    mainMenu1: loadSound('main-menu.mp3'),
+    mainMenu2: loadSound('main-menu2.mp3'),
+    mainMenu3: loadSound('main-menu3.mp3'),
+    readySteadyGo: loadSound('ready-steady-go.mp3'),
+    speedUp: loadSound('speed-up.mp3'),
+    speed: loadSound('speed.mp3'),
+    tension: loadSound('tension.mp3'),
+    winner: loadSound('winner.mp3')
 };
 
 function playSound(soundName) {
