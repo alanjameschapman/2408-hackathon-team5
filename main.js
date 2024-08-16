@@ -152,7 +152,53 @@ scene.add(middleLine);
 // const car = new THREE.Mesh(carGeometry, carMaterial);
 // scene.add(car);
 
-// let carPosition = 0;
+let carPosition = 0;
+
+const x = 0, y = -9;
+const factor = 0.2;
+const carShapePoints = {
+    2: [3, -6],
+    3: [3, -4],
+    4: [5, -4],
+    5: [5, -2],
+    6: [3, -2],
+    7: [3, 1],
+    8: [5, 1],
+    9: [5, 3],
+    10: [3, 3],
+    11: [3, 6],
+    12: [1, 6],
+    13: [1, 8],
+    14: [4, 8],
+    15: [4, 9],
+    16: [-4, 9],
+    17: [-4, 8],
+    18: [-1, 8],
+    19: [-1, 6],
+    20: [-3, 6],
+    21: [-3, 3],
+    22: [-5, 3],
+    23: [-5, 1],
+    24: [-3, 1],
+    25: [-3, -2],
+    26: [-5, -2],
+    27: [-5, -4],
+    28: [-3, -4],
+    29: [-3, -6]
+}
+const carShape = new THREE.Shape();
+
+carShape.moveTo( x , y * factor );
+for (let i in carShapePoints){
+    // console.log(carShapePoints[carPoint][0]);
+    carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
+}
+
+
+const geometry = new THREE.ShapeGeometry( carShape );
+const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+const car = new THREE.Mesh( geometry, material ) ;
+scene.add( car );
 
 // Set camera position
 camera.position.set(0, 100, 200);
@@ -163,11 +209,11 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Move the car along the curve
-    //carPosition += 0.001;
-    // if (carPosition > 1) carPosition = 0;
-    // const carPoint = curve.getPointAt(carPosition);
-    // const carYOffset = Math.sin(carPosition * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    // car.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road
+    carPosition += 0.001;
+    if (carPosition > 1) carPosition = 0;
+    const carPoint = curve.getPointAt(carPosition);
+    const carYOffset = Math.sin(carPosition * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    car.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road
 
     // // Dynamically adjust the camera's height to ensure the car is always visible
     // let cameraHeight = car.position.y + 50;
