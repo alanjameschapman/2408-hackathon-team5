@@ -21,7 +21,29 @@ function loadSound(fileName){
     return sound;
 };
 
+// Load all your sounds
+const sounds = {
+    finalLap: loadSound('assets/sound/final-lap.mp3'),
+    hitBorder: loadSound('assets/sound/hit-border.mp3'),
+    itemEffect: loadSound('assets/sound/item-effect.mp3'),
+    lost: loadSound('assets/sound/lost.mp3'),
+    mainMenu1: loadSound('assets/sound/main-menu.mp3'),
+    mainMenu2: loadSound('assets/sound/main-menu2.mp3'),
+    mainMenu3: loadSound('assets/sound/main-menu3.mp3'),
+    readySteadyGo: loadSound('assets/sound/ready-steady-go.mp3'),
+    speedUp: loadSound('assets/sound/speed-up.mp3'),
+    speed: loadSound('assets/sound/speed.mp3'),
+    tension: loadSound('assets/sound/tension.mp3'),
+    winner: loadSound('assets/sound/winner.mp3')
+};
 
+function playSound(soundName) {
+    if (sounds[soundName]) {
+        sounds[soundName].play();
+    } else {
+        console.error(`Sound ${soundName} not found!`);
+    }
+};
 
 // Function to generate control points
 function generateControlPoints(numPoints, range) {
