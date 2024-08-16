@@ -72,6 +72,10 @@ nav {
 /*Style for the mute/unmute button*/
 #soundtrack-btn {
     width: 10%;
-    height: 50px;
-    font-family: 'Press Start 2P', cursive;
+    background-color: transparent;
+    border:none;
+}
+/*mute/unmute logo size*/
+.fa-solid {
+    font-size: xxx-large;
 }

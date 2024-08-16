@@ -3,14 +3,14 @@ var sound = document.getElementById('soundtrack');
 var soundtrackButton = document.getElementById('soundtrack-btn');
 
 function controlMusic() {
-    if (soundtrackButton.textContent === "Unmute") {
+    if (sound.muted) {
         sound.muted = false;
-        soundtrackButton.textContent = "Mute";
+        soundtrackButton.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
         sound.play()
     }
     else {
         sound.muted = true;
-        soundtrackButton.textContent = "Unmute";
+        soundtrackButton.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
     }
 }
 
