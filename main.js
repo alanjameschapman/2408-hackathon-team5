@@ -18,7 +18,10 @@ function loadSound(fileName){
         sound.setLoop(false); // Adjust based on whether you want the sound to loop
         sound.setVolume(0.5); // Adjust the volume
     });
+    return sound;
 };
+
+
 
 // Function to generate control points
 function generateControlPoints(numPoints, range) {
