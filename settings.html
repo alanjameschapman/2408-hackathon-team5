@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>8-bit Retro Racing Game</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
     <h1>🏁 Retro Racing 🏁</h1>
 
@@ -17,7 +19,16 @@
     <p>Car colour:</p>
 
     <nav>
-            <a href="index.html">Back to Main Menu</a></li>
+        <a href="index.html">Back to Main Menu</a></li>
     </nav>
+    <!--Soundtrack with mute/unmute button-->
+    <audio id="soundtrack" src="assets/sound/main-menu2.mp3" loop muted>
+        <span>
+            Your browser doesn't support HTML5 audio:
+        </span>
+    </audio>
+    <button type="submit" id="soundtrack-btn">Unmute</button>
+    <script src="sound.js"></script>
 </body>
+
 </html>

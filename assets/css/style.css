@@ -68,3 +68,10 @@ table {
 nav {
     line-height: 3;
 }
+
+/*Style for the mute/unmute button*/
+#soundtrack-btn {
+    width: 10%;
+    height: 50px;
+    font-family: 'Press Start 2P', cursive;
+}
