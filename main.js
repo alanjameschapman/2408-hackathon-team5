@@ -45,6 +45,10 @@ function playSound(soundName) {
     }
 };
 
+// Potential sound activations "Choose correct section of code to activate sound
+// and refer to sounds object in main.js"
+// playSound('readySteadyGo');, playSound('hitBorder');, e.t.c.
+
 // Function to generate control points
 function generateControlPoints(numPoints, range) {
     const points = [];
