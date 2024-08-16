@@ -5,6 +5,50 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Added AudioListener to the camera after scene is created
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// Function to load sound
+function loadSound(fileName){
+    const sound = new THREE.Audio(listener);
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load(`assets/sound/${fileName}`, function(buffer) {
+        sound.setBuffer(buffer);
+        sound.setLoop(false); // Adjust based on whether you want the sound to loop
+        sound.setVolume(0.5); // Adjust the volume
+    });
+    return sound;
+};
+
+// Load all your sounds
+const sounds = {
+    finalLap: loadSound('final-lap.mp3'),
+    hitBorder: loadSound('hit-border.mp3'),
+    itemEffect: loadSound('item-effect.mp3'),
+    lost: loadSound('lost.mp3'),
+    mainMenu1: loadSound('main-menu.mp3'),
+    mainMenu2: loadSound('main-menu2.mp3'),
+    mainMenu3: loadSound('main-menu3.mp3'),
+    readySteadyGo: loadSound('ready-steady-go.mp3'),
+    speedUp: loadSound('speed-up.mp3'),
+    speed: loadSound('speed.mp3'),
+    tension: loadSound('tension.mp3'),
+    winner: loadSound('winner.mp3')
+};
+
+function playSound(soundName) {
+    if (sounds[soundName]) {
+        sounds[soundName].play();
+    } else {
+        console.error(`Sound ${soundName} not found!`);
+    }
+};
+
+// Potential sound activations "Choose correct section of code to activate sound
+// and refer to sounds object in main.js"
+// playSound('readySteadyGo');, playSound('hitBorder');, e.t.c.
+
 // Function to generate control points
 function generateControlPoints(numPoints, range) {
     const points = [];
@@ -234,6 +278,11 @@ camera.lookAt(0, 0, 0);
 
 // Render the scene
 function animate() {
+    // Play the start sound once when the game begins
+    if (carPosition === 0) {
+        playSound('readySteadyGo');
+    }
+
     requestAnimationFrame(animate);
 
     // Move the car along the curve
@@ -251,14 +300,53 @@ function animate() {
     const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
     carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
 
-
     // // Dynamically adjust the camera's height to ensure the car is always visible
     // let cameraHeight = car.position.y + 50;
     // if (cameraHeight < 50) cameraHeight = 50; // Minimum height to avoid the camera going too low
     // camera.position.set(carPoint.x, cameraHeight, carPoint.z + 100);
     // camera.lookAt(car.position);
 
+    /*
+    // Check if the car is hitting the border
+    const roadWidthHalf = roadWidth / 2;
+    if (car.position.x > roadWidthHalf || car.position.x < -roadWidthHalf) {
+        playSound('hitBorder'); // Play border collision sound
+    };
+
+    // Increase car speed at a specific point
+    if (carPosition > 0.5 && carPosition < 0.51) {
+        playSound('speedUp'); // Play speed-up sound
+        carPosition += 0.005; // Speed up for demonstration
+    } else {
+        carPosition += 0.001;
+    }
+    */
+
     // Render scene normally
     renderer.render(scene, camera);
 }
 animate();
+
+/* 
+if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
+    playSound('hitBorder'); // Play the border hit sound
+}
+
+// Assuming there's a section where the car speed increases
+if (carIsSpeedingUp) {
+    playSound('speedUp'); // Play the speed-up sound
+}
+
+if (carPosition >= 0.9 && !finalLapPlayed) { // Assuming final lap is at 90% of the track
+    playSound('finalLap'); // Play the final lap sound
+    finalLapPlayed = true; // To ensure it's only played once
+}
+
+if (carPosition >= 1) { // Assuming the finish line is at position 1 on the curve
+    playSound('winner'); // Play the winner sound
+}
+
+if (playerLost) {
+    playSound('lost'); // Play the lost sound
+}
+*/
