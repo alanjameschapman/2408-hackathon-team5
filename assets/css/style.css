@@ -30,7 +30,7 @@ body {
     margin: 50px auto;
     width: 335px;
     height: 601px;
-    background-image: url('/assets/images/gearshift.png');
+    background-image: url('../images/gearshift.png');
     background-size: cover;
     background-position: center;
 }
