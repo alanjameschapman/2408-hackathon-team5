@@ -5,6 +5,18 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// add eventListener for keyboard manipulation of car
+
+let keyName = "";
+let iPress = false;
+document.addEventListener("keydown", (event) => {
+    keyName = event.key;
+    if (keyName === 'i'){
+        iPress = true;
+    }
+    // console.log(keyName);
+});
+
 // Added AudioListener to the camera after scene is created
 const listener = new THREE.AudioListener();
 camera.add(listener);
@@ -29,7 +41,7 @@ const sounds = {
     lost: loadSound('lost.mp3'),
     mainMenu1: loadSound('main-menu.mp3'),
     mainMenu2: loadSound('main-menu2.mp3'),
-    mainMenu3: loadSound('main-menu3.mp3'),
+    mainMenu3: loadSound('highscore.mp3'),
     readySteadyGo: loadSound('ready-steady-go.mp3'),
     speedUp: loadSound('speed-up.mp3'),
     speed: loadSound('speed.mp3'),
@@ -49,7 +61,7 @@ function playSound(soundName) {
 // and refer to sounds object in main.js"
 // playSound('readySteadyGo');, playSound('hitBorder');, e.t.c.
 
-// Function to generate control points
+// Function to generate control pointsfffffffffff
 function generateControlPoints(numPoints, range) {
     const points = [];
     for (let i = 0; i < numPoints; i++) {
@@ -303,23 +315,28 @@ function createCar(opponent){
     return car;
 }
 
-const carShape = new THREE.Shape();
+// const carShape = new THREE.Shape();
 
-carShape.moveTo( x , y * factor );
-for (let i in carShapePoints){
-    // console.log(carShapePoints[carPoint][0]);
-    carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
-}
+// carShape.moveTo( x , y * factor );
+// for (let i in carShapePoints){
+//     // console.log(carShapePoints[carPoint][0]);
+//     carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
+// }
 
 
-const geometry = new THREE.ShapeGeometry( carShape );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const car = new THREE.Mesh( geometry, material ) ;
-scene.add( car );
+// const geometry = new THREE.ShapeGeometry( carShape );
+// const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+// const car = new THREE.Mesh( geometry, material ) ;
+// scene.add( car );
 
+// User car is carOne
 carOne = createCar(true);
+
+let timeOne = 0.0;
+
 scene.add( carOne );
-let carPositionOne = 0;
+
+// Computer cars
 carTwo = createCar(false);
 scene.add( carTwo );
 let carPositionTwo = 0.02;
@@ -337,12 +354,19 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Move the car along the curve
+ 
+    if (iPress === false){
+        const carPoint = curve.getPointAt(0.001);
+        const carYOffset = Math.sin(timeOne * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+        carOne.position.set(carPoint.x, carPoint.y + 1, carPoint.z); // Slightly above the road
+    } else {
+        timeOne += 0.001;
+        const carPoint = curve.getPointAt(timeOne);
+        const carYOffset = Math.sin(timeOne * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+        carOne.position.set(carPoint.x, carPoint.y + 1, carPoint.z); // Slightly above the road     
+    }
 
-    carPositionOne += 0.001;
-    if (carPositionOne > 1) carPositionOne = 0;
-    const carPoint = curve.getPointAt(carPositionOne);
-    const carYOffset = Math.sin(carPositionOne * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road
+ 
 
     // Move the car two along the curve
     carPositionTwo += 0.001;
@@ -378,23 +402,6 @@ function animate() {
 }
 animate();
 
-// Mute/unmute soundtrack 
-var sound = document.getElementById('soundtrack');
-var soundtrackButton = document.getElementById('soundtrack-btn');
-
-function controlMusic() {
-    if (soundtrackButton.textContent === "Unmute") {
-        sound.muted = false;
-        soundtrackButton.textContent = "Mute";
-        sound.play()
-    }
-    else {
-        sound.muted = true;
-        soundtrackButton.textContent = "Unmute";
-    }
-}
-
-soundtrackButton.addEventListener('click',controlMusic);
    
 /* 
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {

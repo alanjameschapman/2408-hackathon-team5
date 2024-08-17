@@ -68,3 +68,14 @@ table {
 nav {
     line-height: 3;
 }
+
+/*Style for the mute/unmute button*/
+#soundtrack-btn {
+    width: 10%;
+    background-color: transparent;
+    border:none;
+}
+/*mute/unmute logo size*/
+.fa-solid {
+    font-size: xxx-large;
+}
