@@ -85,3 +85,9 @@ nav {
 .highscore-btn {
     margin-right: 50px;
 }
+
+/*Change style for the dropdown on audio settings*/
+#audioDropdown {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 90%;
+}
