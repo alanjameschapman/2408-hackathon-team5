@@ -29,7 +29,7 @@ const sounds = {
     lost: loadSound('lost.mp3'),
     mainMenu1: loadSound('main-menu.mp3'),
     mainMenu2: loadSound('main-menu2.mp3'),
-    mainMenu3: loadSound('main-menu3.mp3'),
+    mainMenu3: loadSound('highscore.mp3'),
     readySteadyGo: loadSound('ready-steady-go.mp3'),
     speedUp: loadSound('speed-up.mp3'),
     speed: loadSound('speed.mp3'),
@@ -378,23 +378,6 @@ function animate() {
 }
 animate();
 
-// Mute/unmute soundtrack 
-var sound = document.getElementById('soundtrack');
-var soundtrackButton = document.getElementById('soundtrack-btn');
-
-function controlMusic() {
-    if (soundtrackButton.textContent === "Unmute") {
-        sound.muted = false;
-        soundtrackButton.textContent = "Mute";
-        sound.play()
-    }
-    else {
-        sound.muted = true;
-        soundtrackButton.textContent = "Unmute";
-    }
-}
-
-soundtrackButton.addEventListener('click',controlMusic);
    
 /* 
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
