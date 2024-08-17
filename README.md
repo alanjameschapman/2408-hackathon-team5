@@ -32,8 +32,6 @@ Needs of users were defined as user stories and managed via [GitHub Issues/Proje
 
 Once the game was chosen, existing online games were researched to help identify what would be included in the scope of the project. Possible features were identified and converted to user stories within GitHub projects.
 
-<img src="https://github.com/alanjameschapman/whiteboard/raw/main/docs/screenshots/mvp.png" alt="mvp" width="800"/>
-
 ## Structure
 
 [Lucidchart](https://www.lucidchart.com) was used to structure the site navigation as shown in the user flow diagram below. This was later developed into wireframes - see the Skeleton section.
@@ -69,27 +67,13 @@ Whilst developing these wireframes, it was concluded that site navigation would 
 
 ### Colour schemes
 
-The colour scheme is based on the original Micro Machines video game cover.
+The colour scheme is based on the NES i.e. grey, red, black and grey.
 
-<img src="https://github.com/alanjameschapman/whiteboard/raw/main/static/images/default.jpg" alt="default image" width="500"/>
-
-The dominant colour is yellow, which promotes [positivity, attention and creativity](https://blog.hope-education.co.uk/classroom-psychology-which-colours-are-best-for-education/) in the classroom.
-
-The [Coolors image picker](https://coolors.co/image-picker) was used to generate a colour pallette based on the primary colour yellow. The [consensus](https://whitesharkmedia.com/blog/web-tracking/choose-the-best-color-palette-for-your-website/) for website colour palettes is that in addition to white, three colours should be used - primary, seconday and accent - in a ratio of 60:30:10.
-
-The colour combination was regenerated until the three colours generated a positive response in the author and provided suitable contrast, which was checked using [eightshapes](https://eightshapes.com/).
+![NES](https://github.com/user-attachments/assets/a3eaa306-a7e6-4f0b-b823-0a5a72f5ac3c)
 
 ### Fonts
 
-[iloveewp](https://www.ilovewp.com/resources/education/wordpress-for-schools/most-used-google-fonts-on-school-websites/) lists the "Most Used Google Fonts on School Websites". The top fonts were reviewed and Raleway was selected for its unique 'w' which would be used as the branding, navbar, footer and favicon to represent the 'w' in whiteboard:
-
-[fontjoy](https://fontjoy.com/) was used to find suitable pairing fonts. Martel Sans was chosen because it has serif and sans-serif variants for headings and paragraphs respectively. Sans-serif was chosen for paragraph text because serifs can be difficult to read on screens.
-
-<img src="https://github.com/alanjameschapman/whiteboard/raw/main/docs/screenshots/fonts.png" alt="fonts" width="400"/>
-
-[favicon.io](https://favicon.io/favicon-generator/) was used to generate the favicon, based on the colour pallet.
-
-![favicon](/docs/screenshots/favicon.png)
+Press Start 2P from [Google Fonts](https://fonts.google.com/specimen/Press+Start+2P/about) was chosen to create an 80's arcade game feel and a feeling of nostalgia.
 
 # Features
 
