@@ -79,3 +79,9 @@ nav {
 .fa-solid {
     font-size: xxx-large;
 }
+
+/*Center the button on highscore page*/
+
+.highscore-btn {
+    margin-right: 50px;
+}
