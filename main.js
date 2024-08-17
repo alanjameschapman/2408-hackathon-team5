@@ -35,7 +35,8 @@ const sounds = {
     speed: loadSound('speed.mp3'),
     slowDown: loadSound('slow-down.mp3'),
     tension: loadSound('tension.mp3'),
-    winner: loadSound('winner.mp3')
+    winner: loadSound('winner.mp3'),
+    soundtrack: loadSound('soundtrack.mp3')
 };
 
 function playSound(soundName) {
