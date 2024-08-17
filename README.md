@@ -48,7 +48,18 @@ The user flow diagram helped to develop wireframes for each page using [Balsamiq
 
 #### Wireframes
 
-After assessing the wireframes, it was decided that the desktop would follow the same layouts for all pages as the laptop, but with more space between elements.
+**Concept Design**
+
+A concept design was created during the brainstorming phase, showing possible track layout and game features for development.
+
+<img width="717" alt="Screenshot 2024-08-17 at 13 18 48" src="https://github.com/user-attachments/assets/b711f6e0-8002-4871-b0e6-c28f136c8da9">
+
+| Page | Wireframe |
+| - | - |
+| Index | |
+| help | |
+| High Scores | |
+| Race | |
 
 ### Navigation Design
 
@@ -262,7 +273,10 @@ CSS was validated by direct input using [jigsaw W3C Validation Service](https://
 | Meeting | Minutes | Actions
 | - | - | - |
 | Thu, 10AM | - EA shared concept ideas as discussed at KO meeting.<br/> - Agreed on micro-machines-style game i.e. bird's-eye view of racing car(s) around a track with obstacles and power-ups (oil-slicks, magnets etc.)<br/> - Three.js framework to be used.<br/> - MVP deployment Friday PM latest to include track and single car only. | - EA: cars.<br/>- MB: track.<br/>- TG: 8-bit music.<br/>- AC: issues for kanban, agile documentation, then helping elsewhere.
-| Thu, 7PM | | |
+| Thu, 7PM | Discussed inital progress and obstacles. | - Mick to help Tamas on integrating 8-bit music.<br/>- Mark to develop track further.<br/>- AJC to develop site nav.|
+| Fri, 10AM | - Code tweak could generate realistic 2D track.<br/>- Discussed how to generate realistic computer racers.<br/>- High scores page can be for points instead of timings (which wouldn’t be relevant for new tracks every time). User scores 5, 3 then 1 for 1st, 2nd and 3rd out of 6. Need to finish in top 3 to progress to next race. | - Efren to push car to repo then work on moving car around track with user input.<br/>- Mark to convert track from 3D to 2D to help realistic track rendering.<br/>- AJC to continue with overall site and styling. |
+| Fri, 7PM | Worked through merge conflicts together as valuable learning exercise | As previous. |
+| Sat, 10AM | Limited availability but EA and AJC discussed PRs | - EA working on car movement with user input.<br/>- AJC working on highscores.<br/>- MB working on track 3D to 2D and background.
 
 # Credits
 
