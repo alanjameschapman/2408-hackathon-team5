@@ -30,7 +30,7 @@ body {
     margin: 50px auto;
     width: 335px;
     height: 601px;
-    background-image: url('/assets/images/gearshift.png');
+    background-image: url('../images/gearshift.png');
     background-size: cover;
     background-position: center;
 }
@@ -78,4 +78,10 @@ nav {
 /*mute/unmute logo size*/
 .fa-solid {
     font-size: xxx-large;
+}
+
+/*Center the button on highscore page*/
+
+.highscore-btn {
+    margin-right: 50px;
 }

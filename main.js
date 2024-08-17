@@ -6,15 +6,35 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // add eventListener for keyboard manipulation of car
-
+// define a delta angle for user rotation
+const deltaAngle = Math.PI / 30.0 ;
 let keyName = "";
-let iPress = false;
+let uSpeed = 0;
+// user car unitary direction vector
+let tanX;
+let tanZ;
 document.addEventListener("keydown", (event) => {
     keyName = event.key;
-    if (keyName === 'i'){
-        iPress = true;
+    if (keyName === 'ArrowUp' && uSpeed < 11){
+        uSpeed += 1;
     }
-    // console.log(keyName);
+    if (keyName === 'ArrowDown' && uSpeed > 0){
+        uSpeed -= 1;
+    }
+    if (keyName === 'ArrowRight' && uSpeed > 0){
+        const newTanX = tanX * Math.cos(deltaAngle) - tanZ * Math.sin(deltaAngle);
+        const newTanZ = tanX * Math.sin(deltaAngle) + tanZ * Math.cos(deltaAngle);
+        tanX = newTanX;
+        tanZ = newTanZ;
+        console.log(tanX, tanZ);
+    }
+    if (keyName === 'ArrowLeft' && uSpeed > 0){
+        const newTanX = tanX * Math.cos(-deltaAngle) - tanZ * Math.sin(-deltaAngle);
+        const newTanZ = tanX * Math.sin(-deltaAngle) + tanZ * Math.cos(-deltaAngle);
+        tanX = newTanX;
+        tanZ = newTanZ;
+        console.log(tanX, tanZ);
+    }
 });
 
 // Added AudioListener to the camera after scene is created
@@ -22,10 +42,10 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 // Function to load sound
-function loadSound(fileName){
+function loadSound(fileName) {
     const sound = new THREE.Audio(listener);
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load(`assets/sound/${fileName}`, function(buffer) {
+    audioLoader.load(`assets/sound/${fileName}`, function (buffer) {
         sound.setBuffer(buffer);
         sound.setLoop(false); // Adjust based on whether you want the sound to loop
         sound.setVolume(0.5); // Adjust the volume
@@ -41,12 +61,16 @@ const sounds = {
     lost: loadSound('lost.mp3'),
     mainMenu1: loadSound('main-menu.mp3'),
     mainMenu2: loadSound('main-menu2.mp3'),
-    mainMenu3: loadSound('highscore.mp3'),
+
+    highScore: loadSound('highscore.mp3'),
+
     readySteadyGo: loadSound('ready-steady-go.mp3'),
     speedUp: loadSound('speed-up.mp3'),
     speed: loadSound('speed.mp3'),
+    slowDown: loadSound('slow-down.mp3'),
     tension: loadSound('tension.mp3'),
-    winner: loadSound('winner.mp3')
+    winner: loadSound('winner.mp3'),
+    soundtrack: loadSound('soundtrack.mp3')
 };
 
 function playSound(soundName) {
@@ -262,7 +286,7 @@ scene.add(middleLine);
 let carPosition = 0;
 
 const x = 0, y = -9;
-const factor = 0.2;
+const factor = 0.5;
 const carShapePoints = {
     2: [3, -6],
     3: [3, -4],
@@ -294,56 +318,81 @@ const carShapePoints = {
     29: [-3, -6]
 }
 
-function createCar(opponent){
+function createCar(opponent) {
     /*
     Function creates a car shape and returns mesh
     */
     const carShape = new THREE.Shape();
-    carShape.moveTo( x , y * factor );
-    for (let i in carShapePoints){
+    carShape.moveTo(x, y * factor);
+    for (let i in carShapePoints) {
         // console.log(carShapePoints[i]);
-        carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
+        carShape.lineTo(carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
     }
-    const geometry = new THREE.ShapeGeometry( carShape );
+    const geometry = new THREE.ShapeGeometry(carShape);
     let material;
     if (opponent === true) {
-        material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    } else{
-        material = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+        material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    } else {
+        material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
     }
-    const car = new THREE.Mesh( geometry, material ) ;
+    const car = new THREE.Mesh(geometry, material);
     return car;
 }
 
 // const carShape = new THREE.Shape();
 
-// carShape.moveTo( x , y * factor );
-// for (let i in carShapePoints){
-//     // console.log(carShapePoints[carPoint][0]);
-//     carShape.lineTo( carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
-// }
+
+carShape.moveTo(x, y * factor);
+for (let i in carShapePoints) {
+    // console.log(carShapePoints[carPoint][0]);
+    carShape.lineTo(carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
+}
 
 
-// const geometry = new THREE.ShapeGeometry( carShape );
-// const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-// const car = new THREE.Mesh( geometry, material ) ;
-// scene.add( car );
+const geometry = new THREE.ShapeGeometry(carShape);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const car = new THREE.Mesh(geometry, material);
+scene.add(car);
+
 
 // User car is carOne
 carOne = createCar(true);
 
-let timeOne = 0.0;
+let timeUser = 0.0;
 
 scene.add( carOne );
 
 // Computer cars
+
 carTwo = createCar(false);
-scene.add( carTwo );
+scene.add(carTwo);
 let carPositionTwo = 0.02;
 // Set camera position
 camera.position.set(0, 100, 200);
 camera.lookAt(0, 0, 0);
 
+
+// Initialise user car function
+
+function iniUserPos(curve, timeC, timeS){
+    const carPoint = curve.getPointAt(timeC);
+    const carPointTwo = curve.getPointAt(timeC + timeS);
+    const carYOffset = Math.sin(timeUser * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    const iniTanX = (carPointTwo.x - carPoint.x) / timeS;
+    const iniTanZ = (carPointTwo.z - carPoint.z) / timeS;
+    const normTan = Math.sqrt(Math.pow(iniTanX, 2) + Math.pow(iniTanZ, 2));
+    const iniTanXN = iniTanX / normTan;
+    const iniTanZN = iniTanZ / normTan;
+    return [carPoint.x, carPoint.y + carYOffset + 1, carPoint.z, iniTanXN, iniTanZN];
+}
+
+function moveUser(tanX, tanZ, timeS){
+    const deltaX = tanX * uSpeed * timeS;
+    const deltaZ = tanZ * uSpeed * timeS;
+    // console.log(tanX, tanZ);
+    return [deltaX, deltaZ];
+
+}
 // Render the scene
 function animate() {
     // Play the start sound once when the game begins
@@ -354,23 +403,36 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Move the car along the curve
- 
-    if (iPress === false){
-        const carPoint = curve.getPointAt(0.001);
-        const carYOffset = Math.sin(timeOne * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-        carOne.position.set(carPoint.x, carPoint.y + 1, carPoint.z); // Slightly above the road
+    const timeStep = 0.01;
+
+    timeUser += timeStep;
+    // Handle car move
+    if (timeUser < 2 * timeStep){ // Initial position
+        iniPos = iniUserPos(curve, timeUser, timeStep);
+        tanX = iniPos[3];
+        tanZ = iniPos[4];
+
+        carOne.position.set(iniPos[0], iniPos[1] , iniPos[2]); // Slightly above the road
     } else {
-        timeOne += 0.001;
-        const carPoint = curve.getPointAt(timeOne);
-        const carYOffset = Math.sin(timeOne * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-        carOne.position.set(carPoint.x, carPoint.y + 1, carPoint.z); // Slightly above the road     
+        deltas = moveUser(tanX, tanZ, timeStep);
+        const carPoint = carOne.position;
+        // console.log(userCurrent.x, userCurrent.y, userCurrent.z);
+        // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+        carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
+
     }
+
+    // if (timeOne * uSpeed > 1) timeOne = 0;
+    // const carPoint = curve.getPointAt(timeOne * uSpeed);
+    // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    // carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road     
+
 
  
 
     // Move the car two along the curve
     carPositionTwo += 0.001;
-    if (carPositionTwo> 1) carPositionTwo = 0;
+    if (carPositionTwo > 1) carPositionTwo = 0;
     const carPointTwo = curve.getPointAt(carPositionTwo);
     const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
     carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
@@ -395,6 +457,15 @@ function animate() {
     } else {
         carPosition += 0.001;
     }
+    
+    // Slow down the car
+
+    if (carPosition > 0.5 && carPosition < 0.51) {
+        playSound('slowDown'); // Play slow-down sound
+        carPosition -= 0.005; // Slow down for demonstration
+    } else {
+        carPosition -= 0.001;
+    }
     */
 
     // Render scene normally
@@ -402,7 +473,7 @@ function animate() {
 }
 animate();
 
-   
+
 /* 
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
     playSound('hitBorder'); // Play the border hit sound
@@ -411,6 +482,10 @@ if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
 // Assuming there's a section where the car speed increases
 if (carIsSpeedingUp) {
     playSound('speedUp'); // Play the speed-up sound
+}
+
+if (carIsSlowingDown) {
+    playSound('slowDown'); // Play the slow-down sound
 }
 
 if (carPosition >= 0.9 && !finalLapPlayed) { // Assuming final lap is at 90% of the track
