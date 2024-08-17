@@ -6,19 +6,35 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // add eventListener for keyboard manipulation of car
-
+// define a delta angle for user rotation
+const deltaAngle = Math.PI / 30.0 ;
 let keyName = "";
 let uSpeed = 0;
+// user car unitary direction vector
+let tanX;
+let tanZ;
 document.addEventListener("keydown", (event) => {
     keyName = event.key;
-    console.log(keyName);
     if (keyName === 'ArrowUp' && uSpeed < 11){
         uSpeed += 1;
     }
     if (keyName === 'ArrowDown' && uSpeed > 0){
         uSpeed -= 1;
     }
-    console.log(uSpeed);
+    if (keyName === 'ArrowRight' && uSpeed > 0){
+        const newTanX = tanX * Math.cos(deltaAngle) - tanZ * Math.sin(deltaAngle);
+        const newTanZ = tanX * Math.sin(deltaAngle) + tanZ * Math.cos(deltaAngle);
+        tanX = newTanX;
+        tanZ = newTanZ;
+        console.log(tanX, tanZ);
+    }
+    if (keyName === 'ArrowLeft' && uSpeed > 0){
+        const newTanX = tanX * Math.cos(-deltaAngle) - tanZ * Math.sin(-deltaAngle);
+        const newTanZ = tanX * Math.sin(-deltaAngle) + tanZ * Math.cos(-deltaAngle);
+        tanX = newTanX;
+        tanZ = newTanZ;
+        console.log(tanX, tanZ);
+    }
 });
 
 // Added AudioListener to the camera after scene is created
@@ -335,8 +351,7 @@ function createCar(opponent){
 
 // User car is carOne
 carOne = createCar(true);
-let tanX;
-let tanZ;
+
 let timeUser = 0.0;
 
 scene.add( carOne );
@@ -381,7 +396,7 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Move the car along the curve
-    const timeStep = 0.0001;
+    const timeStep = 0.01;
 
     timeUser += timeStep;
     // Handle car move
@@ -389,14 +404,14 @@ function animate() {
         iniPos = iniUserPos(curve, timeUser, timeStep);
         tanX = iniPos[3];
         tanZ = iniPos[4];
-        console.log(tanX, tanZ);
+
         carOne.position.set(iniPos[0], iniPos[1] , iniPos[2]); // Slightly above the road
     } else {
         deltas = moveUser(tanX, tanZ, timeStep);
         const carPoint = carOne.position;
         // console.log(userCurrent.x, userCurrent.y, userCurrent.z);
         // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-        carOne.position.set(carPoint.x + deltas[0], carPoint.y + 1, carPoint.z + deltas[1]); // Slightly above the road    
+        carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
 
     }
 
