@@ -11,7 +11,7 @@
 <body>
     <h1>🏁 Retro Racing 🏁</h1>
     <h2>High Scores</h2>
-    <table>
+    <table id="highScoresTable">
         <thead>
             <tr>
                 <th>RANK</th>
@@ -20,56 +20,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>Player 1</td>
-                <td>1000</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Player 2</td>
-                <td>900</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Player 3</td>
-                <td>800</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>Player 4</td>
-                <td>700</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>Player 5</td>
-                <td>600</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td>Player 6</td>
-                <td>500</td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td>Player 7</td>
-                <td>400</td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td>Player 8</td>
-                <td>300</td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td>Player 9</td>
-                <td>200</td>
-            </tr>
-            <tr>
-                <td>10</td>
-                <td>Player 10</td>
-                <td>100</td>
-            </tr>
+            <!-- High scores will be populated here by JavaScript -->
         </tbody>
     </table>
     <nav>
@@ -87,6 +38,19 @@
     <script src="sound.js"></script>
     <!--Font awesome kit for mute/unmute logo-->
     <script src="https://kit.fontawesome.com/7b140d41c7.js" crossorigin="anonymous"></script>
+    <script src="highscores.js"></script>
+    <script>
+        // Generate fictitious high scores and display them when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        generateFictitiousHighScores();
+        displayHighScores();
+    });
+    
+    // Once gamplay in place to generate scores, use this code instead:
+    // Call the displayHighScores function when the page loads
+    // document.addEventListener('DOMContentLoaded', displayHighScores);
+
+    </script>
 </body>
 
 </html>
