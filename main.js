@@ -339,21 +339,6 @@ function createCar(opponent) {
     return car;
 }
 
-// const carShape = new THREE.Shape();
-
-
-carShape.moveTo(x, y * factor);
-for (let i in carShapePoints) {
-    // console.log(carShapePoints[carPoint][0]);
-    carShape.lineTo(carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
-}
-
-
-const geometry = new THREE.ShapeGeometry(carShape);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const car = new THREE.Mesh(geometry, material);
-scene.add(car);
-
 
 // User car is carOne
 carOne = createCar(true);
@@ -403,7 +388,7 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Move the car along the curve
-    const timeStep = 0.01;
+    const timeStep = 0.1;
 
     timeUser += timeStep;
     // Handle car move
