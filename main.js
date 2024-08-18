@@ -83,6 +83,38 @@ function playSound(soundName) {
     }
 };
 
+// Create a large plane geometry
+const rockySize = 5000;
+const rockySegments = 500; // Number of segments for the grid
+const rockyGeometry = new THREE.PlaneGeometry(rockySize, rockySize, rockySegments, rockySegments);
+
+// Create the rocky material using vertex colors
+const rockyMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
+
+// Generate the rocky pattern using vertex colors
+const rockyColors = [];
+const baseColor = new THREE.Color(0xd2b48c); // Base tan color (like sandy rock)
+
+for (let i = 0; i < rockyGeometry.attributes.position.count; i++) {
+    // Slightly vary the color to simulate rocky terrain
+    const variation = (Math.random() - 0.5) * 0.2; // Random variation factor
+    const rockyColor = baseColor.clone().offsetHSL(0, 0, variation); // Adjust lightness slightly
+    rockyColors.push(rockyColor.r, rockyColor.g, rockyColor.b);
+}
+
+// Assign the colors to the geometry
+rockyGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rockyColors, 3));
+
+// Create the rocky plane mesh
+const rockyPlane = new THREE.Mesh(rockyGeometry, rockyMaterial);
+
+// Position the plane so it appears behind the track
+rockyPlane.rotation.x = -Math.PI / 2; // Rotate to make it flat like a floor
+rockyPlane.position.y = -0.1; // Slightly below the track to avoid z-fighting
+
+// Add the rocky plane to the scene
+scene.add(rockyPlane);
+
 // Generate elliptical control points with random kinks
 function generateEllipseWithKinks(numPoints, radiusX, radiusZ, kinkFactor) {
     const points = [];
