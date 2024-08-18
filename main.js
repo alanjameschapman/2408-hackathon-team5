@@ -85,7 +85,7 @@ function playSound(soundName) {
 
 // Create a large plane geometry
 const rockySize = 5000;
-const rockySegments = 500; // Number of segments for the grid
+const rockySegments = 500; 
 const rockyGeometry = new THREE.PlaneGeometry(rockySize, rockySize, rockySegments, rockySegments);
 
 // Create the rocky material using vertex colors
@@ -93,12 +93,12 @@ const rockyMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, side: TH
 
 // Generate the rocky pattern using vertex colors
 const rockyColors = [];
-const baseColor = new THREE.Color(0xd2b48c); // Base tan color (like sandy rock)
+const baseColor = new THREE.Color(0xd2b48c); 
 
 for (let i = 0; i < rockyGeometry.attributes.position.count; i++) {
-    // Slightly vary the color to simulate rocky terrain
-    const variation = (Math.random() - 0.5) * 0.2; // Random variation factor
-    const rockyColor = baseColor.clone().offsetHSL(0, 0, variation); // Adjust lightness slightly
+    
+    const variation = (Math.random() - 0.5) * 0.2; 
+    const rockyColor = baseColor.clone().offsetHSL(0, 0, variation); 
     rockyColors.push(rockyColor.r, rockyColor.g, rockyColor.b);
 }
 
@@ -109,8 +109,8 @@ rockyGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rockyColors
 const rockyPlane = new THREE.Mesh(rockyGeometry, rockyMaterial);
 
 // Position the plane so it appears behind the track
-rockyPlane.rotation.x = -Math.PI / 2; // Rotate to make it flat like a floor
-rockyPlane.position.y = -0.1; // Slightly below the track to avoid z-fighting
+rockyPlane.rotation.x = -Math.PI / 2; 
+rockyPlane.position.y = -0.1; 
 
 // Add the rocky plane to the scene
 scene.add(rockyPlane);
@@ -205,8 +205,8 @@ const road = new THREE.Mesh(roadGeometry, roadMaterial);
 scene.add(road);
 
 // Create border and middle lines
-const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
-const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); // White dashed line
+const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); 
+const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); 
 
 const leftBorderPoints = [];
 const rightBorderPoints = [];
@@ -240,6 +240,32 @@ middleLine.computeLineDistances();
 scene.add(leftBorder);
 scene.add(rightBorder);
 scene.add(middleLine);
+
+// Create the start/finish line geometry
+const lineWidth = roadWidth;
+const lineLength = 2; 
+const lineGeometry = new THREE.PlaneGeometry(lineWidth, lineLength);
+
+// Create a material for the line (white color)
+const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+
+// Create the start/finish line mesh
+const startFinishLine = new THREE.Mesh(lineGeometry, lineMaterial);
+
+// Position the line at the starting point of the track
+const startPoint = curve.getPointAt(0); 
+const startTangent = curve.getTangentAt(0).normalize(); 
+
+// Position the line at the start point
+startFinishLine.position.set(startPoint.x, startPoint.y + 0.01, startPoint.z); 
+
+// Rotate the line to align it with the road
+const lineRotationAngle = Math.atan2(startTangent.z, startTangent.x);
+startFinishLine.rotation.y = -lineRotationAngle; 
+startFinishLine.rotation.x = -Math.PI / 2; 
+
+// Add the start/finish line to the scene
+scene.add(startFinishLine);
 
 const potholes = [];
 const badTerrains = [];
