@@ -13,6 +13,8 @@ let uSpeed = 0;
 // user car unitary direction vector
 let tanX;
 let tanZ;
+let tanXOld;
+let tanZOld;
 document.addEventListener("keydown", (event) => {
     keyName = event.key;
     if (keyName === 'ArrowUp' && uSpeed < 11){
@@ -102,7 +104,7 @@ function createPothole() {
     const geometry = new THREE.CylinderGeometry(5, 5, 2, 32);
     const material = new THREE.MeshBasicMaterial({ color: 0x333333 });
     const pothole = new THREE.Mesh(geometry, material);
-    pothole.rotation.x = -Math.PI / 2; // Flatten it on the road
+    pothole.rotation.x = -Math.PI / 2; 
     return pothole;
 }
 
@@ -110,21 +112,29 @@ function createBadTerrain() {
     const geometry = new THREE.PlaneGeometry(15, 15);
     const material = new THREE.MeshBasicMaterial({ color: 0x884422 });
     const badTerrain = new THREE.Mesh(geometry, material);
-    badTerrain.rotation.x = -Math.PI / 2; // Align with the road
+    badTerrain.rotation.x = -Math.PI / 2; 
     return badTerrain;
+}
+
+function createSpeedBoostPad() {
+    const geometry = new THREE.PlaneGeometry(20, 10); 
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.7 }); // Green for speed boost
+    const boostPad = new THREE.Mesh(geometry, material);
+    boostPad.rotation.x = -Math.PI / 2; 
+    return boostPad;
 }
 
 // Generate control points for the track
 const numPoints = 20;
 const radiusX = 200;
 const radiusZ = 100;
-const kinkFactor = 50; // Adjust this to control how sharp the bends and kinks are
+const kinkFactor = 50; 
 
 const controlPoints = generateEllipseWithKinks(numPoints, radiusX, radiusZ, kinkFactor);
 
 // Create a closed loop curve for the track
 const curve = new THREE.CatmullRomCurve3(controlPoints, true);
-curve.tension = 0.5; // Smoothing factor for curves
+curve.tension = 0.5; 
 
 // Create road geometry along the curve
 const roadWidth = 20;
@@ -193,7 +203,7 @@ const leftBorder = new THREE.Line(leftBorderGeometry, borderMaterial);
 const rightBorder = new THREE.Line(rightBorderGeometry, borderMaterial);
 const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial);
 
-middleLine.computeLineDistances(); // Required for dashed lines to appear correctly
+middleLine.computeLineDistances(); 
 
 scene.add(leftBorder);
 scene.add(rightBorder);
@@ -205,42 +215,97 @@ const numPotholes = 5;
 const numBadTerrains = 3;
 
 for (let i = 0; i < numPotholes; i++) {
-    const t = Math.random(); // Random position on the track
+    const t = Math.random(); 
     const point = curve.getPointAt(t);
     const pothole = createPothole();
-    pothole.position.set(point.x, point.y + 0.1, point.z); // Slightly above the road
+    pothole.position.set(point.x, point.y + 0.1, point.z); 
     potholes.push(pothole);
     scene.add(pothole);
 }
 
 for (let i = 0; i < numBadTerrains; i++) {
-    const t = Math.random(); // Random position on the track
+    const t = Math.random(); 
     const point = curve.getPointAt(t);
     const badTerrain = createBadTerrain();
-    badTerrain.position.set(point.x, point.y + 0.1, point.z); // Slightly above the road
+    badTerrain.position.set(point.x, point.y + 0.1, point.z); 
     badTerrains.push(badTerrain);
     scene.add(badTerrain);
 }
 
 function checkCollision(car, obstacle) {
     const distance = car.position.distanceTo(obstacle.position);
-    return distance < 5; // Adjust the threshold based on car and obstacle sizes
+    return distance < 5; 
 }
 
 function handleCollisions() {
     potholes.forEach((pothole) => {
         if (checkCollision(carOne, pothole)) {
-            uSpeed = Math.max(uSpeed - 0.1, 0); // Reduce speed when hitting a pothole
-            playSound('hitBorder'); // Play a sound if desired
+            uSpeed = Math.max(uSpeed - 0.1, 0); 
+            playSound('hitBorder'); 
         }
     });
 
     badTerrains.forEach((badTerrain) => {
         if (checkCollision(carOne, badTerrain)) {
-            uSpeed = Math.max(uSpeed - 0.05, 0); // Smaller speed reduction for bad terrain
-            playSound('hitBorder'); // Or a different sound effect
+            uSpeed = Math.max(uSpeed - 0.05, 0); 
+            playSound('hitBorder'); 
         }
     });
+}
+
+function checkBorderCollision(car, roadWidth) {
+    const carPos = new THREE.Vector2(car.position.x, car.position.z);
+
+    let closestDistance = Infinity;
+    let closestNormal = null;
+
+    for (let i = 0; i <= roadSegments; i++) {
+        const t = i / roadSegments;
+        const point = curve.getPointAt(t);
+        const tangent = curve.getTangentAt(t).normalize();
+        const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
+        
+        const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
+        const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
+
+        const leftBorderPos = new THREE.Vector2(leftBorderPoint.x, leftBorderPoint.z);
+        const rightBorderPos = new THREE.Vector2(rightBorderPoint.x, rightBorderPoint.z);
+
+        const leftDistance = carPos.distanceTo(leftBorderPos);
+        const rightDistance = carPos.distanceTo(rightBorderPos);
+
+        if (leftDistance < closestDistance) {
+            closestDistance = leftDistance;
+            closestNormal = normal;
+        }
+
+        if (rightDistance < closestDistance) {
+            closestDistance = rightDistance;
+            closestNormal = normal.negate();
+        }
+    }
+
+    if (closestDistance < roadWidth / 2) {
+        return closestNormal;
+    }
+
+    return null;
+}
+
+const speedBoostPads = [];
+const numBoostPads = 5; 
+
+for (let i = 0; i < numBoostPads; i++) {
+    const t = Math.random(); 
+    const point = curve.getPointAt(t);
+    const tangent = curve.getTangentAt(t).normalize();
+    
+    
+    const offset = tangent.clone().multiplyScalar((Math.random() - 0.5) * roadWidth * 0.66); 
+    const boostPad = createSpeedBoostPad();
+    boostPad.position.set(point.x + offset.x, point.y + 0.01, point.z + offset.z); 
+    speedBoostPads.push(boostPad);
+    scene.add(boostPad);
 }
 
 let carPosition = 0;
@@ -296,6 +361,7 @@ function createCar(opponent) {
         material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
     }
     const car = new THREE.Mesh(geometry, material);
+    car.rotateX(-Math.PI * 0.5);
     return car;
 }
 
@@ -313,7 +379,9 @@ carTwo = createCar(false);
 scene.add(carTwo);
 let carPositionTwo = 0.02;
 // Set camera position
+
 camera.position.set(0, 200, 0);
+
 camera.lookAt(0, 0, 0);
 
 
@@ -330,14 +398,47 @@ function iniUserPos(curve, timeC, timeS) {
 iniPos = iniUserPos(curve, 0, 0.001);
 tanX = iniPos[3];
 tanZ = iniPos[4];
-carOne.position.set(iniPos[0], iniPos[1], iniPos[2]); // Initial position of user car
-carTwo.position.set(iniPos[0], iniPos[1], iniPos[2] + 1); // Initial position of computer car
+carOne.position.set(iniPos[0], iniPos[1], iniPos[2]);
+carTwo.position.set(iniPos[0], iniPos[1], iniPos[2] + 1); 
 
 // Car movement delta function
 function moveUser(tanX, tanZ, timeS) {
     const deltaX = tanX * uSpeed * timeS;
     const deltaZ = tanZ * uSpeed * timeS;
+
     return [deltaX, deltaZ];
+}
+
+let boostActive = false;
+let boostEndTime = 0;
+const boostDuration = 3; 
+const boostMultiplier = 2; 
+
+function isOnSpeedBoostPad(car, boostPad) {
+    const carPos = new THREE.Vector2(car.position.x, car.position.z);
+    const padPos = new THREE.Vector2(boostPad.position.x, boostPad.position.z);
+    const distance = carPos.distanceTo(padPos);
+    const padWidth = 10; 
+    return distance < padWidth; 
+}
+
+function handleBoostPads() {
+    if (!boostActive) {
+        speedBoostPads.forEach((boostPad) => {
+            if (isOnSpeedBoostPad(carOne, boostPad)) {
+                boostActive = true;
+                originalSpeed = uSpeed; 
+                uSpeed *= boostMultiplier; 
+                boostEndTime = performance.now() + boostDuration * 1000; 
+                playSound('speedUp');
+            }
+        });
+    } else {
+        if (performance.now() >= boostEndTime) {
+            uSpeed = originalSpeed; 
+            boostActive = false;
+        }
+    }
 }
 
 // Render the scene
@@ -353,15 +454,48 @@ function animate() {
         iniPos = iniUserPos(curve, timeUser, timeStep);
         tanX = iniPos[3];
         tanZ = iniPos[4];
+        tanXOld = tanX;
+        tanZOld = tanZ;
+        const iniRot = Math.acos(tanZ);
+        if (tanX > 0) {
+            carOne.rotateZ(iniRot);
+        } else {
+            carOne.rotateZ(-iniRot);
+        }
+ 
+        carOne.position.set(iniPos[0], 15.0 , iniPos[2]); // Slightly above the road
 
-        carOne.position.set(iniPos[0], iniPos[1], iniPos[2]); // Slightly above the road
     } else {
         deltas = moveUser(tanX, tanZ, timeStep);
+        const iniRot = Math.acos(tanX * tanXOld + tanZ * tanZOld);
+
+        if (tanZ > tanZOld) {
+            carOne.rotateZ(iniRot);
+        } else {
+            carOne.rotateZ(-iniRot);
+        }
+        tanXOld = tanX;
+        tanZOld = tanZ;
         const carPoint = carOne.position;
         carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road
     }
 
     handleCollisions();
+    
+    handleBoostPads();
+
+    // Border collision check
+    const collisionNormal = checkBorderCollision(carOne, roadWidth);
+if (collisionNormal) {
+    const velocity = new THREE.Vector2(tanX, tanZ);
+    const normal2D = new THREE.Vector2(collisionNormal.x, collisionNormal.z);
+    const reflectedVelocity = velocity.clone().sub(normal2D.clone().multiplyScalar(2 * velocity.dot(normal2D)));
+    tanX = reflectedVelocity.x;
+    tanZ = reflectedVelocity.y;
+
+    uSpeed = Math.max(uSpeed - 0.5, 0); 
+    playSound('hitBorder'); 
+}
 
     // Keep the car within the bounds of the curve
     if (carPositionTwo > 1) {
