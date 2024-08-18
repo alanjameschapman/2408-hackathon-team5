@@ -81,73 +81,57 @@ function playSound(soundName) {
     }
 };
 
-// Potential sound activations "Choose correct section of code to activate sound
-// and refer to sounds object in main.js"
-// playSound('readySteadyGo');, playSound('hitBorder');, e.t.c.
-
-// Function to generate control pointsfffffffffff
-function generateControlPoints(numPoints, range) {
+// Generate elliptical control points with random kinks
+function generateEllipseWithKinks(numPoints, radiusX, radiusZ, kinkFactor) {
     const points = [];
     for (let i = 0; i < numPoints; i++) {
-        const x = Math.random() * range - range / 2;
-        const z = Math.random() * range - range / 2;
+        const angle = (i / numPoints) * Math.PI * 2;
+        let x = radiusX * Math.cos(angle);
+        let z = radiusZ * Math.sin(angle);
+
+        // Introduce random kinks and bends
+        x += (Math.random() - 0.5) * kinkFactor;
+        z += (Math.random() - 0.5) * kinkFactor;
+
         points.push(new THREE.Vector3(x, 0, z));
     }
     return points;
 }
 
-// Function to ensure bends are within a range of 60 to 160 degrees
-function adjustControlPoints(points, minTurnAngle, maxTurnAngle) {
-    const adjustedPoints = [points[0]];
-
-    for (let i = 1; i < points.length - 1; i++) {
-        const prevPoint = points[i - 1];
-        const currPoint = points[i];
-        const nextPoint = points[i + 1];
-
-        const prevDir = new THREE.Vector3().subVectors(currPoint, prevPoint).normalize();
-        const nextDir = new THREE.Vector3().subVectors(nextPoint, currPoint).normalize();
-
-        const angle = prevDir.angleTo(nextDir);
-
-        if (angle < minTurnAngle || angle > maxTurnAngle) {
-            // Insert a midpoint if the angle is too sharp or too wide
-            const midPoint = new THREE.Vector3().addVectors(prevPoint, nextPoint).multiplyScalar(0.5);
-            adjustedPoints.push(midPoint);
-        } else {
-            adjustedPoints.push(currPoint);
-        }
-    }
-
-    adjustedPoints.push(points[points.length - 1]);
-    return adjustedPoints;
+function createPothole() {
+    const geometry = new THREE.CylinderGeometry(5, 5, 2, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0x333333 });
+    const pothole = new THREE.Mesh(geometry, material);
+    pothole.rotation.x = -Math.PI / 2; // Flatten it on the road
+    return pothole;
 }
 
-// Generate control points
-const numPoints = 10;
-const controlPoints = generateControlPoints(numPoints, 200);
+function createBadTerrain() {
+    const geometry = new THREE.PlaneGeometry(15, 15);
+    const material = new THREE.MeshBasicMaterial({ color: 0x884422 });
+    const badTerrain = new THREE.Mesh(geometry, material);
+    badTerrain.rotation.x = -Math.PI / 2; // Align with the road
+    return badTerrain;
+}
 
-// Convert degrees to radians
-const minTurnAngle = 60 * (Math.PI / 180); // 60 degrees in radians
-const maxTurnAngle = 160 * (Math.PI / 180); // 160 degrees in radians
+// Generate control points for the track
+const numPoints = 20;
+const radiusX = 200;
+const radiusZ = 100;
+const kinkFactor = 50; // Adjust this to control how sharp the bends and kinks are
 
-// Adjust control points to ensure bends are within the specified range
-const adjustedControlPoints = adjustControlPoints(controlPoints, minTurnAngle, maxTurnAngle);
+const controlPoints = generateEllipseWithKinks(numPoints, radiusX, radiusZ, kinkFactor);
 
 // Create a closed loop curve for the track
-const curve = new THREE.CatmullRomCurve3(adjustedControlPoints, true);
+const curve = new THREE.CatmullRomCurve3(controlPoints, true);
 curve.tension = 0.5; // Smoothing factor for curves
 
-// Create road geometry along the curve with smooth transitions
+// Create road geometry along the curve
 const roadWidth = 20;
 const roadSegments = 100;
 const roadGeometry = new THREE.BufferGeometry();
 const roadVertices = [];
 const roadIndices = [];
-
-// Increased amplitude for the hills
-const hillAmplitude = 20;
-const hillFrequency = 1; // Frequency of the hills
 
 for (let i = 0; i <= roadSegments; i++) {
     const t = i / roadSegments;
@@ -155,13 +139,8 @@ for (let i = 0; i <= roadSegments; i++) {
     const tangent = curve.getTangentAt(t).normalize();
     const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
 
-    // Calculate yOffset for smooth hills and valleys
-    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
-
     const leftPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
     const rightPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
-    leftPoint.y += yOffset;
-    rightPoint.y += yOffset;
 
     roadVertices.push(leftPoint.x, leftPoint.y, leftPoint.z);
     roadVertices.push(rightPoint.x, rightPoint.y, rightPoint.z);
@@ -197,15 +176,9 @@ for (let i = 0; i <= roadSegments; i++) {
     const tangent = curve.getTangentAt(t).normalize();
     const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
 
-    // Apply the same increased amplitude to the borders and middle line
-    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
-
     const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
     const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
     const middlePoint = point.clone();
-    leftBorderPoint.y += yOffset;
-    rightBorderPoint.y += yOffset;
-    middlePoint.y += yOffset;
 
     leftBorderPoints.push(leftBorderPoint);
     rightBorderPoints.push(rightBorderPoint);
@@ -226,62 +199,49 @@ scene.add(leftBorder);
 scene.add(rightBorder);
 scene.add(middleLine);
 
-// Create a car object
-// const carGeometry = new THREE.BoxGeometry(2, 2, 4);
-// const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// const car = new THREE.Mesh(carGeometry, carMaterial);
-// scene.add(car);
+const potholes = [];
+const badTerrains = [];
+const numPotholes = 5;
+const numBadTerrains = 3;
 
-// let carPosition = 0;
-
-// Create border and middle lines
-/* const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
-const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); // White dashed line
-
-const leftBorderPoints = [];
-const rightBorderPoints = [];
-const middleLinePoints = [];
-
-for (let i = 0; i <= roadSegments; i++) {
-    const t = i / roadSegments;
+for (let i = 0; i < numPotholes; i++) {
+    const t = Math.random(); // Random position on the track
     const point = curve.getPointAt(t);
-    const tangent = curve.getTangentAt(t).normalize();
-    const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
-
-    // Apply the same increased amplitude to the borders and middle line
-    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
-
-    const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
-    const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
-    const middlePoint = point.clone();
-    leftBorderPoint.y += yOffset;
-    rightBorderPoint.y += yOffset;
-    middlePoint.y += yOffset;
-
-    leftBorderPoints.push(leftBorderPoint);
-    rightBorderPoints.push(rightBorderPoint);
-    middleLinePoints.push(middlePoint);
+    const pothole = createPothole();
+    pothole.position.set(point.x, point.y + 0.1, point.z); // Slightly above the road
+    potholes.push(pothole);
+    scene.add(pothole);
 }
 
-const leftBorderGeometry = new THREE.BufferGeometry().setFromPoints(leftBorderPoints);
-const rightBorderGeometry = new THREE.BufferGeometry().setFromPoints(rightBorderPoints);
-const middleLineGeometry = new THREE.BufferGeometry().setFromPoints(middleLinePoints);
+for (let i = 0; i < numBadTerrains; i++) {
+    const t = Math.random(); // Random position on the track
+    const point = curve.getPointAt(t);
+    const badTerrain = createBadTerrain();
+    badTerrain.position.set(point.x, point.y + 0.1, point.z); // Slightly above the road
+    badTerrains.push(badTerrain);
+    scene.add(badTerrain);
+}
 
-const leftBorder = new THREE.Line(leftBorderGeometry, borderMaterial);
-const rightBorder = new THREE.Line(rightBorderGeometry, borderMaterial);
-const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial); */
+function checkCollision(car, obstacle) {
+    const distance = car.position.distanceTo(obstacle.position);
+    return distance < 5; // Adjust the threshold based on car and obstacle sizes
+}
 
-middleLine.computeLineDistances(); // Required for dashed lines to appear correctly
+function handleCollisions() {
+    potholes.forEach((pothole) => {
+        if (checkCollision(carOne, pothole)) {
+            uSpeed = Math.max(uSpeed - 0.1, 0); // Reduce speed when hitting a pothole
+            playSound('hitBorder'); // Play a sound if desired
+        }
+    });
 
-scene.add(leftBorder);
-scene.add(rightBorder);
-scene.add(middleLine);
-
-// Create a car object
-// const carGeometry = new THREE.BoxGeometry(2, 2, 4);
-// const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// const car = new THREE.Mesh(carGeometry, carMaterial);
-// scene.add(car);
+    badTerrains.forEach((badTerrain) => {
+        if (checkCollision(carOne, badTerrain)) {
+            uSpeed = Math.max(uSpeed - 0.05, 0); // Smaller speed reduction for bad terrain
+            playSound('hitBorder'); // Or a different sound effect
+        }
+    });
+}
 
 let carPosition = 0;
 
@@ -353,111 +313,71 @@ carTwo = createCar(false);
 scene.add(carTwo);
 let carPositionTwo = 0.02;
 // Set camera position
-camera.position.set(0, 100, 200);
+camera.position.set(0, 200, 0);
 camera.lookAt(0, 0, 0);
 
 
 // Initialise user car function
 
-function iniUserPos(curve, timeC, timeS){
+function iniUserPos(curve, timeC, timeS) {
     const carPoint = curve.getPointAt(timeC);
     const carPointTwo = curve.getPointAt(timeC + timeS);
-    const carYOffset = Math.sin(timeUser * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    const iniTanX = (carPointTwo.x - carPoint.x) / timeS;
-    const iniTanZ = (carPointTwo.z - carPoint.z) / timeS;
-    const normTan = Math.sqrt(Math.pow(iniTanX, 2) + Math.pow(iniTanZ, 2));
-    const iniTanXN = iniTanX / normTan;
-    const iniTanZN = iniTanZ / normTan;
-    return [carPoint.x, carPoint.y + carYOffset + 1, carPoint.z, iniTanXN, iniTanZN];
+    tanX = (carPointTwo.x - carPoint.x) / timeS;
+    tanZ = (carPointTwo.z - carPoint.z) / timeS;
+    return [carPoint.x, carPoint.y, carPoint.z, tanX, tanZ];
 }
 
-function moveUser(tanX, tanZ, timeS){
+iniPos = iniUserPos(curve, 0, 0.001);
+tanX = iniPos[3];
+tanZ = iniPos[4];
+carOne.position.set(iniPos[0], iniPos[1], iniPos[2]); // Initial position of user car
+carTwo.position.set(iniPos[0], iniPos[1], iniPos[2] + 1); // Initial position of computer car
+
+// Car movement delta function
+function moveUser(tanX, tanZ, timeS) {
     const deltaX = tanX * uSpeed * timeS;
     const deltaZ = tanZ * uSpeed * timeS;
-    // console.log(tanX, tanZ);
     return [deltaX, deltaZ];
-
 }
+
 // Render the scene
 function animate() {
-    // Play the start sound once when the game begins
-    if (carPosition === 0) {
-        playSound('readySteadyGo');
-    }
-
     requestAnimationFrame(animate);
-
-    // Move the car along the curve
-    const timeStep = 0.1;
-
+    renderer.render(scene, camera);
+    const timeStep = 0.0001;
     timeUser += timeStep;
+    carPositionTwo += timeStep;
+
     // Handle car move
-    if (timeUser < 2 * timeStep){ // Initial position
+    if (timeUser < 2 * timeStep) { // Initial position
         iniPos = iniUserPos(curve, timeUser, timeStep);
         tanX = iniPos[3];
         tanZ = iniPos[4];
 
-        carOne.position.set(iniPos[0], iniPos[1] , iniPos[2]); // Slightly above the road
+        carOne.position.set(iniPos[0], iniPos[1], iniPos[2]); // Slightly above the road
     } else {
         deltas = moveUser(tanX, tanZ, timeStep);
         const carPoint = carOne.position;
-        // console.log(userCurrent.x, userCurrent.y, userCurrent.z);
-        // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-        carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
-
+        carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road
     }
 
-    // if (timeOne * uSpeed > 1) timeOne = 0;
-    // const carPoint = curve.getPointAt(timeOne * uSpeed);
-    // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    // carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road     
+    handleCollisions();
 
+    // Keep the car within the bounds of the curve
+    if (carPositionTwo > 1) {
+        carPositionTwo = 0;
+    }
+    if (timeUser > 1) {
+        timeUser = 0;
+    }
 
- 
-
-    // Move the car two along the curve
-    carPositionTwo += 0.001;
-    if (carPositionTwo > 1) carPositionTwo = 0;
     const carPointTwo = curve.getPointAt(carPositionTwo);
-    const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
+    carTwo.position.set(carPointTwo.x, carPointTwo.y, carPointTwo.z);
 
-    // // Dynamically adjust the camera's height to ensure the car is always visible
-    // let cameraHeight = car.position.y + 50;
-    // if (cameraHeight < 50) cameraHeight = 50; // Minimum height to avoid the camera going too low
-    // camera.position.set(carPoint.x, cameraHeight, carPoint.z + 100);
-    // camera.lookAt(car.position);
-
-    /*
-    // Check if the car is hitting the border
-    const roadWidthHalf = roadWidth / 2;
-    if (car.position.x > roadWidthHalf || car.position.x < -roadWidthHalf) {
-        playSound('hitBorder'); // Play border collision sound
-    };
-
-    // Increase car speed at a specific point
-    if (carPosition > 0.5 && carPosition < 0.51) {
-        playSound('speedUp'); // Play speed-up sound
-        carPosition += 0.005; // Speed up for demonstration
-    } else {
-        carPosition += 0.001;
-    }
-    
-    // Slow down the car
-
-    if (carPosition > 0.5 && carPosition < 0.51) {
-        playSound('slowDown'); // Play slow-down sound
-        carPosition -= 0.005; // Slow down for demonstration
-    } else {
-        carPosition -= 0.001;
-    }
-    */
-
-    // Render scene normally
-    renderer.render(scene, camera);
+    //camera.lookAt(carOne.position);
 }
-animate();
 
+animate();
 
 /* 
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
