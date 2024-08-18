@@ -13,6 +13,8 @@ let uSpeed = 0;
 // user car unitary direction vector
 let tanX;
 let tanZ;
+let tanXOld;
+let tanZOld;
 document.addEventListener("keydown", (event) => {
     keyName = event.key;
     if (keyName === 'ArrowUp' && uSpeed < 11){
@@ -336,6 +338,7 @@ function createCar(opponent) {
         material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
     }
     const car = new THREE.Mesh(geometry, material);
+    car.rotateX(-Math.PI * 0.5);
     return car;
 }
 
@@ -353,7 +356,7 @@ carTwo = createCar(false);
 scene.add(carTwo);
 let carPositionTwo = 0.02;
 // Set camera position
-camera.position.set(0, 100, 200);
+camera.position.set(0, 150, 20);
 camera.lookAt(0, 0, 0);
 
 
@@ -372,9 +375,11 @@ function iniUserPos(curve, timeC, timeS){
 }
 
 function moveUser(tanX, tanZ, timeS){
+    /*Calculates the increament in distance of user car
+    on timeS delta*/
     const deltaX = tanX * uSpeed * timeS;
     const deltaZ = tanZ * uSpeed * timeS;
-    // console.log(tanX, tanZ);
+
     return [deltaX, deltaZ];
 
 }
@@ -396,10 +401,28 @@ function animate() {
         iniPos = iniUserPos(curve, timeUser, timeStep);
         tanX = iniPos[3];
         tanZ = iniPos[4];
+        tanXOld = tanX;
+        tanZOld = tanZ;
+        const iniRot = Math.acos(tanZ);
+        if (tanX > 0) {
+            carOne.rotateZ(iniRot);
+        } else {
+            carOne.rotateZ(-iniRot);
+        }
+ 
+        carOne.position.set(iniPos[0], 15.0 , iniPos[2]); // Slightly above the road
 
-        carOne.position.set(iniPos[0], iniPos[1] , iniPos[2]); // Slightly above the road
     } else {
         deltas = moveUser(tanX, tanZ, timeStep);
+        const iniRot = Math.acos(tanX * tanXOld + tanZ * tanZOld);
+
+        if (tanZ > tanZOld) {
+            carOne.rotateZ(iniRot);
+        } else {
+            carOne.rotateZ(-iniRot);
+        }
+        tanXOld = tanX;
+        tanZOld = tanZ;
         const carPoint = carOne.position;
         // console.log(userCurrent.x, userCurrent.y, userCurrent.z);
         // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
