@@ -573,6 +573,28 @@ function animate() {
 
     }
 
+    // if (timeOne * uSpeed > 1) timeOne = 0;
+    // const carPoint = curve.getPointAt(timeOne * uSpeed);
+    // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    // carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road     
+
+
+ 
+
+    // Move the car two along the curve
+    carPositionTwo += 0.001;
+    if (carPositionTwo > 1) carPositionTwo = 0;
+    const carPointTwo = curve.getPointAt(carPositionTwo);
+    const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
+
+    // // Dynamically adjust the camera's height to ensure the car is always visible
+    // let cameraHeight = car.position.y + 50;
+    // if (cameraHeight < 50) cameraHeight = 50; // Minimum height to avoid the camera going too low
+    // camera.position.set(carPoint.x, cameraHeight, carPoint.z + 100);
+    // camera.lookAt(car.position);
+
+    /*
     // Check if the car is hitting the border
     const roadWidthHalf = roadWidth / 2;
     if (carOne.position.x > roadWidthHalf || carOne.position.x < -roadWidthHalf) {
@@ -608,19 +630,15 @@ if (collisionNormal) {
     if (carPositionTwo > 1) {
         carPositionTwo = 0;
     }
-    if (timeUser > 1) {
-        timeUser = 0;
-    }
+    */
 
-    const carPointTwo = curve.getPointAt(carPositionTwo);
-    carTwo.position.set(carPointTwo.x, carPointTwo.y, carPointTwo.z);
-
-    //camera.lookAt(carOne.position);
+    // Render scene normally
+    renderer.render(scene, camera);
 }
 
 animate();
 
-/* 
+
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
     playSound('hitBorder'); // Play the border hit sound
 }
@@ -646,4 +664,4 @@ if (carPosition >= 1) { // Assuming the finish line is at position 1 on the curv
 if (playerLost) {
     playSound('lost'); // Play the lost sound
 }
-*/
+

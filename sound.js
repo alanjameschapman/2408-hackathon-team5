@@ -30,7 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Event listener for dropdown change
-audioDropdown.addEventListener('change', function () {
+audioDropdown.addEventListener('change', changeAudio);
+    
+    
+function changeAudio() {
     const selectedMusic = this.value;
 
     if (selectedMusic) {
@@ -40,4 +43,4 @@ audioDropdown.addEventListener('change', function () {
         // Save the selected music in localStorage
         localStorage.setItem('selectedMusic', selectedMusic);
     }
-});
+};
