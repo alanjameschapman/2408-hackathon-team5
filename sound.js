@@ -6,7 +6,7 @@ function controlMusic() {
     if (sound.muted) {
         sound.muted = false;
         soundtrackButton.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-        sound.play()
+        sound.play();
     }
     else {
         sound.muted = true;
