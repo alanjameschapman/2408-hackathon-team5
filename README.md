@@ -124,6 +124,8 @@ The register screen allows the user to register for the site. The user can enter
 - [W3C Validator](https://validator.w3.org/): Tool for checking HTML and CSS code compliance with web standards.
 - [JSHint](https://jshint.com/): Static code analysis tool for detecting errors and potential issues in JavaScript code.
 - [VSCode](https://code.visualstudio.com/): Free and highly extensible source code editor with built-in features for editing, debugging, and version control integration. It supports various programming languages and is available for multiple platforms.
+- [BeepBox](https://www.beepbox.co): Online tool for creating chiptune-music style, which is reminiscent of the sounds from retro video games.
+- [Bosca Ceoil](https://yurisizov.itch.io/boscaceoil-blue) - Open-source music creation software to compose music with a retro or chiptune style.
 
 ## Deployment, Development & Version Control
 
