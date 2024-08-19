@@ -6,7 +6,7 @@ function controlMusic() {
     if (sound.muted) {
         sound.muted = false;
         soundtrackButton.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-        sound.play()
+        sound.play();
     }
     else {
         sound.muted = true;
@@ -14,7 +14,9 @@ function controlMusic() {
     }
 }
 
-soundtrackButton.addEventListener('click', controlMusic);
+if(soundtrackButton){
+    soundtrackButton.addEventListener('click', controlMusic);
+}
 
 // User can choose theme music from dropdown
 const audioDropdown = document.getElementById('audioDropdown');
@@ -25,12 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedMusic) {
         sound.src = savedMusic;  // Set the source of the audio player
         sound.play();            // Play the selected audio
-        audioDropdown.value = savedMusic; // Set the dropdown to the saved option
+        if(audioDropdown){
+            audioDropdown.value = savedMusic;
+         } // Set the dropdown to the saved option
     }
 });
 
 // Event listener for dropdown change
-audioDropdown.addEventListener('change', function () {
+if(audioDropdown){
+    audioDropdown.addEventListener('change', changeAudio);
+}; 
+    
+function changeAudio() {
     const selectedMusic = this.value;
 
     if (selectedMusic) {
@@ -40,4 +48,4 @@ audioDropdown.addEventListener('change', function () {
         // Save the selected music in localStorage
         localStorage.setItem('selectedMusic', selectedMusic);
     }
-});
+};
