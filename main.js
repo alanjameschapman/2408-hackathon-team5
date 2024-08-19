@@ -24,6 +24,7 @@ document.addEventListener("keydown", (event) => {
     keyName = event.key;
     if (keyName === 'ArrowUp' && uSpeed < 11){
         uSpeed += 1;
+        console.log(uSpeed)
     }
     if (keyName === 'ArrowDown' && uSpeed > 0){
         uSpeed -= 1;
@@ -405,7 +406,7 @@ const carShapePoints = {
     29: [-3, -6]
 };
 
-function createCar(opponent) {
+function createCar() {
     /*
     Function creates a car shape and returns mesh
     */
@@ -416,12 +417,7 @@ function createCar(opponent) {
         carShape.lineTo(carShapePoints[i][0] * factor, carShapePoints[i][1] * factor);
     }
     const geometry = new THREE.ShapeGeometry(carShape);
-    let material;
-    if (opponent === true) {
-        material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    } else {
-        material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    }
+    let material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
     const car = new THREE.Mesh(geometry, material);
     car.rotateX(-Math.PI * 0.5);
     return car;
@@ -429,17 +425,13 @@ function createCar(opponent) {
 
 
 // User car is carOne
-carOne = createCar(true);
+carOne = createCar();
 
 let timeUser = 0.0;
 
 scene.add( carOne );
 
-// Computer cars
 
-carTwo = createCar(false);
-scene.add(carTwo);
-let carPositionTwo = 0.02;
 // Set camera position
 
 camera.position.set(0, 200, 0);
@@ -534,22 +526,22 @@ function carRotate(n){
 
 
 // Render the scene
-function animate() {
-    // Play the start sound once when the game begins
-    if (carPosition === 0) {
-        playSound('readySteadyGo');
-    }
-}
+// function animate() {
+//     // Play the start sound once when the game begins
+//     if (carPosition === 0) {
+//         playSound('readySteadyGo');
+//     }
+// }
 
 // Render the scene
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
-    const timeStep = 0.0001;
+    const timeStep = 0.1;
     timeUser += timeStep;
 
     // Handle user car move
-    if (timeUser < 2 * timeStep){ // Initial position
+    if (timeUser < timeStep + 0.00001){ // Initial position
         iniPos = iniUserPos(curve, timeUser);
         gCompCar['tanX'][0] = iniPos[3];
         gCompCar['tanZ'][0]= iniPos[4];
@@ -562,83 +554,56 @@ function animate() {
         } else {
             carOne.rotateZ(-iniRot);
         } 
-        carOne.position.set(iniPos[0], 15.0 , iniPos[2]); // Slightly above the road
+        carOne.position.set(iniPos[0], 20.0 , iniPos[2]); // Slightly above the road
 
     } else {
         deltas = moveUser(gCompCar['tanX'][0], gCompCar['tanZ'][0], timeStep);
         carRotate(0);
         const carPoint = carOne.position;
-
+        console.log(deltas);
         carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
 
     }
 
-    // if (timeOne * uSpeed > 1) timeOne = 0;
-    // const carPoint = curve.getPointAt(timeOne * uSpeed);
-    // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    // carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road     
+    // // Check if the car is hitting the border
+    // const roadWidthHalf = roadWidth / 2;
+    // if (carOne.position.x > roadWidthHalf || carOne.position.x < -roadWidthHalf) {
+    //     playSound('hitBorder'); // Play border collision sound
+    // };
 
+    // // Increase car speed at a specific point
+    // if (carPosition > 0.5 && carPosition < 0.51) {
+    //     playSound('speedUp'); // Play speed-up sound
+    //     carPosition += 0.005; // Speed up for demonstration
+    // } else {
+    //     carPosition += 0.001;
+    // }
 
- 
-
-    // Move the car two along the curve
-    carPositionTwo += 0.001;
-    if (carPositionTwo > 1) carPositionTwo = 0;
-    const carPointTwo = curve.getPointAt(carPositionTwo);
-    const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
-
-    // // Dynamically adjust the camera's height to ensure the car is always visible
-    // let cameraHeight = car.position.y + 50;
-    // if (cameraHeight < 50) cameraHeight = 50; // Minimum height to avoid the camera going too low
-    // camera.position.set(carPoint.x, cameraHeight, carPoint.z + 100);
-    // camera.lookAt(car.position);
-
-    /*
-    // Check if the car is hitting the border
-    const roadWidthHalf = roadWidth / 2;
-    if (carOne.position.x > roadWidthHalf || carOne.position.x < -roadWidthHalf) {
-        playSound('hitBorder'); // Play border collision sound
-    };
-
-    // Increase car speed at a specific point
-    if (carPosition > 0.5 && carPosition < 0.51) {
-        playSound('speedUp'); // Play speed-up sound
-        carPosition += 0.005; // Speed up for demonstration
-    } else {
-        carPosition += 0.001;
-    }
-
-    handleCollisions();
+    // handleCollisions();
     
-    handleBoostPads();
+    // handleBoostPads();
 
-    // Border collision check
-    const collisionNormal = checkBorderCollision(carOne, roadWidth);
-if (collisionNormal) {
-    const velocity = new THREE.Vector2(tanX, tanZ);
-    const normal2D = new THREE.Vector2(collisionNormal.x, collisionNormal.z);
-    const reflectedVelocity = velocity.clone().sub(normal2D.clone().multiplyScalar(2 * velocity.dot(normal2D)));
-    tanX = reflectedVelocity.x;
-    tanZ = reflectedVelocity.y;
+    // // Border collision check
+    // const collisionNormal = checkBorderCollision(carOne, roadWidth);
+    // if (collisionNormal) {
+    //     const velocity = new THREE.Vector2(gCompCar['tanX'][0], gCompCar['tanZ'][0]);
+    //     const normal2D = new THREE.Vector2(collisionNormal.x, collisionNormal.z);
+    //     const reflectedVelocity = velocity.clone().sub(normal2D.clone().multiplyScalar(2 * velocity.dot(normal2D)));
+    //     gCompCar['tanX'][0] = reflectedVelocity.x;
+    //     gCompCar['tanZ'][0] = reflectedVelocity.y;
 
-    uSpeed = Math.max(uSpeed - 0.5, 0); 
-    playSound('hitBorder'); 
-}
+    //     uSpeed = Math.max(uSpeed - 0.5, 0); 
+    //     playSound('hitBorder'); 
+    // }
 
-    // Keep the car within the bounds of the curve
-    if (carPositionTwo > 1) {
-        carPositionTwo = 0;
-    }
-    */
 
-    // Render scene normally
-    renderer.render(scene, camera);
+
+    camera.lookAt(carOne.position);
 }
 
 animate();
 
-
+/* 
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
     playSound('hitBorder'); // Play the border hit sound
 }
@@ -664,4 +629,4 @@ if (carPosition >= 1) { // Assuming the finish line is at position 1 on the curv
 if (playerLost) {
     playSound('lost'); // Play the lost sound
 }
-
+*/
