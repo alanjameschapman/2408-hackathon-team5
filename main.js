@@ -10,11 +10,16 @@ document.body.appendChild(renderer.domElement);
 const deltaAngle = Math.PI / 30.0 ;
 let keyName = "";
 let uSpeed = 0;
-// user car unitary direction vector
-let tanX;
-let tanZ;
-let tanXOld;
-let tanZOld;
+
+// computer car unitary direction dictionary
+
+let gCompCar = {
+    tanX: [0.0, 0.0],
+    tanZ: [0.0, 0.0],
+    tanXOld: [0.0, 0.0],
+    tanZOld: [0.0, -1.0]
+};
+
 document.addEventListener("keydown", (event) => {
     keyName = event.key;
     if (keyName === 'ArrowUp' && uSpeed < 11){
@@ -24,18 +29,17 @@ document.addEventListener("keydown", (event) => {
         uSpeed -= 1;
     }
     if (keyName === 'ArrowRight' && uSpeed > 0){
-        const newTanX = tanX * Math.cos(deltaAngle) - tanZ * Math.sin(deltaAngle);
-        const newTanZ = tanX * Math.sin(deltaAngle) + tanZ * Math.cos(deltaAngle);
-        tanX = newTanX;
-        tanZ = newTanZ;
-        console.log(tanX, tanZ);
+        const newTanX = gCompCar['tanX'][0] * Math.cos(deltaAngle) - gCompCar['tanZ'][0] * Math.sin(deltaAngle);
+        const newTanZ = gCompCar['tanX'][0] * Math.sin(deltaAngle) + gCompCar['tanZ'][0] * Math.cos(deltaAngle);
+        gCompCar['tanX'][0] = newTanX;
+        gCompCar['tanZ'][0] = newTanZ;
+        // console.log(tanX, tanZ);
     }
     if (keyName === 'ArrowLeft' && uSpeed > 0){
-        const newTanX = tanX * Math.cos(-deltaAngle) - tanZ * Math.sin(-deltaAngle);
-        const newTanZ = tanX * Math.sin(-deltaAngle) + tanZ * Math.cos(-deltaAngle);
-        tanX = newTanX;
-        tanZ = newTanZ;
-        console.log(tanX, tanZ);
+        const newTanX = gCompCar['tanX'][0] * Math.cos(-deltaAngle) - gCompCar['tanZ'][0] * Math.sin(-deltaAngle);
+        const newTanZ = gCompCar['tanX'][0] * Math.sin(-deltaAngle) + gCompCar['tanZ'][0] * Math.cos(-deltaAngle);
+        gCompCar['tanX'][0] = newTanX;
+        gCompCar['tanZ'][0] = newTanZ;
     }
 });
 
@@ -399,7 +403,7 @@ const carShapePoints = {
     27: [-5, -4],
     28: [-3, -4],
     29: [-3, -6]
-}
+};
 
 function createCar(opponent) {
     /*
@@ -445,25 +449,24 @@ camera.lookAt(0, 0, 0);
 
 // Initialise user car function
 
-function iniUserPos(curve, timeC, timeS) {
+function iniUserPos(curve, timeC){
+    const timeS = 0.0001;
     const carPoint = curve.getPointAt(timeC);
     const carPointTwo = curve.getPointAt(timeC + timeS);
-    tanX = (carPointTwo.x - carPoint.x) / timeS;
-    tanZ = (carPointTwo.z - carPoint.z) / timeS;
-    return [carPoint.x, carPoint.y, carPoint.z, tanX, tanZ];
+    // const carYOffset = Math.sin(timeUser * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    const iniTanX = (carPointTwo.x - carPoint.x) / timeS;
+    const iniTanZ = (carPointTwo.z - carPoint.z) / timeS;
+    const normTan = Math.sqrt(Math.pow(iniTanX, 2) + Math.pow(iniTanZ, 2));
+    const iniTanXN = iniTanX / normTan;
+    const iniTanZN = iniTanZ / normTan;
+    return [carPoint.x, 10.0 , carPoint.z, iniTanXN, iniTanZN];
 }
 
-iniPos = iniUserPos(curve, 0, 0.001);
-tanX = iniPos[3];
-tanZ = iniPos[4];
-carOne.position.set(iniPos[0], iniPos[1], iniPos[2]);
-carTwo.position.set(iniPos[0], iniPos[1], iniPos[2] + 1); 
-
-// Car movement delta function
-function moveUser(tanX, tanZ, timeS) {
-    const deltaX = tanX * uSpeed * timeS;
-    const deltaZ = tanZ * uSpeed * timeS;
-
+function moveUser(tanXD, tanZD, timeS){
+    /*Calculates the increament in distance of user car
+    on timeS delta*/
+    const deltaX = tanXD * uSpeed * timeS;
+    const deltaZ = tanZD * uSpeed * timeS;
     return [deltaX, deltaZ];
 }
 
@@ -481,21 +484,58 @@ function isOnSpeedBoostPad(car, boostPad) {
 }
 
 function handleBoostPads() {
-    if (!boostActive) {
-        speedBoostPads.forEach((boostPad) => {
-            if (isOnSpeedBoostPad(carOne, boostPad)) {
-                boostActive = true;
-                originalSpeed = uSpeed; 
-                uSpeed *= boostMultiplier; 
-                boostEndTime = performance.now() + boostDuration * 1000; 
-                playSound('speedUp');
-            }
-        });
-    } else {
-        if (performance.now() >= boostEndTime) {
-            uSpeed = originalSpeed; 
-            boostActive = false;
+  if (!boostActive) {
+      speedBoostPads.forEach((boostPad) => {
+          if (isOnSpeedBoostPad(carOne, boostPad)) {
+              boostActive = true;
+              originalSpeed = uSpeed; 
+              uSpeed *= boostMultiplier; 
+              boostEndTime = performance.now() + boostDuration * 1000; 
+              playSound('speedUp');
+          }
+      });
+  } else {
+      if (performance.now() >= boostEndTime) {
+          uSpeed = originalSpeed; 
+          boostActive = false;
+      }
+
+// Calculates rotation of cars
+// temporary out while fixing a general one
+function carRotate(n){
+    const iniRot = Math.acos(gCompCar['tanX'][n] * gCompCar['tanXOld'][n] + gCompCar['tanZ'][n] * gCompCar['tanZOld'][n]);
+
+    if (gCompCar['tanZOld'][n] > 0.0) {
+        if (gCompCar['tanZ'][n] > 0.0 && gCompCar['tanX'][n] > gCompCar['tanXOld'][n]){
+            carOne.rotateZ(iniRot);
+        } else if (gCompCar['tanZ'][n] > 0.0 && gCompCar['tanX'][n] < gCompCar['tanXOld'][n]){
+            carOne.rotateZ(-iniRot);
+        } else if (gCompCar['tanZ'][n] < 0.0 && gCompCar['tanX'][n] < 0.0){
+            carOne.rotateZ(-iniRot);
+        } else {
+            carOne.rotateZ(iniRot);
         }
+    } else {
+        if (gCompCar['tanZ'][n] < 0.0 && gCompCar['tanX'][n] < gCompCar['tanXOld'][n]){
+            carOne.rotateZ(iniRot);
+        } else if (gCompCar['tanZ'][n] < 0.0 && gCompCar['tanX'][n] > gCompCar['tanXOld'][n]){
+            carOne.rotateZ(-iniRot);
+        } else if (gCompCar['tanZ'][n] > 0.0 && gCompCar['tanX'][n] < 0.0){
+            carOne.rotateZ(iniRot);
+        } else {
+            carOne.rotateZ(-iniRot);
+        }
+    }
+    gCompCar['tanXOld'][n] = gCompCar['tanX'][n];
+    gCompCar['tanZOld'][n] = gCompCar['tanZ'][n];
+}
+
+
+// Render the scene
+function animate() {
+    // Play the start sound once when the game begins
+    if (carPosition === 0) {
+        playSound('readySteadyGo');
     }
 }
 
@@ -505,37 +545,53 @@ function animate() {
     renderer.render(scene, camera);
     const timeStep = 0.0001;
     timeUser += timeStep;
-    carPositionTwo += timeStep;
 
-    // Handle car move
-    if (timeUser < 2 * timeStep) { // Initial position
-        iniPos = iniUserPos(curve, timeUser, timeStep);
-        tanX = iniPos[3];
-        tanZ = iniPos[4];
-        tanXOld = tanX;
-        tanZOld = tanZ;
-        const iniRot = Math.acos(tanZ);
-        if (tanX > 0) {
+    // Handle user car move
+    if (timeUser < 2 * timeStep){ // Initial position
+        iniPos = iniUserPos(curve, timeUser);
+        gCompCar['tanX'][0] = iniPos[3];
+        gCompCar['tanZ'][0]= iniPos[4];
+        gCompCar['tanXOld'][0] = gCompCar['tanX'][0];
+        gCompCar['tanZOld'][0] = gCompCar['tanZ'][0];
+        const iniRot = Math.acos(gCompCar['tanZ'][0]);
+        if (gCompCar['tanX'][0] > 0) {
+
             carOne.rotateZ(iniRot);
         } else {
             carOne.rotateZ(-iniRot);
-        }
- 
+        } 
         carOne.position.set(iniPos[0], 15.0 , iniPos[2]); // Slightly above the road
 
     } else {
-        deltas = moveUser(tanX, tanZ, timeStep);
-        const iniRot = Math.acos(tanX * tanXOld + tanZ * tanZOld);
-
-        if (tanZ > tanZOld) {
-            carOne.rotateZ(iniRot);
-        } else {
-            carOne.rotateZ(-iniRot);
-        }
-        tanXOld = tanX;
-        tanZOld = tanZ;
+        deltas = moveUser(gCompCar['tanX'][0], gCompCar['tanZ'][0], timeStep);
+        carRotate(0);
         const carPoint = carOne.position;
-        carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road
+
+        carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
+
+    }   
+
+    // Move the car two along the curve
+    carPositionTwo += 0.001;
+    if (carPositionTwo > 1) carPositionTwo = 0;
+    const carPointTwo = curve.getPointAt(carPositionTwo);
+    iniPos = iniUserPos(curve, carPositionTwo);
+    const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
+    carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
+
+    /*
+    // Check if the car is hitting the border
+    const roadWidthHalf = roadWidth / 2;
+    if (car.position.x > roadWidthHalf || car.position.x < -roadWidthHalf) {
+        playSound('hitBorder'); // Play border collision sound
+    };
+
+    // Increase car speed at a specific point
+    if (carPosition > 0.5 && carPosition < 0.51) {
+        playSound('speedUp'); // Play speed-up sound
+        carPosition += 0.005; // Speed up for demonstration
+    } else {
+        carPosition += 0.001;
     }
 
     handleCollisions();
