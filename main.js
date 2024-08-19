@@ -87,73 +87,97 @@ function playSound(soundName) {
     }
 };
 
-// Potential sound activations "Choose correct section of code to activate sound
-// and refer to sounds object in main.js"
-// playSound('readySteadyGo');, playSound('hitBorder');, e.t.c.
+// Create a large plane geometry
+const rockySize = 5000;
+const rockySegments = 500; 
+const rockyGeometry = new THREE.PlaneGeometry(rockySize, rockySize, rockySegments, rockySegments);
 
-// Function to generate control pointsfffffffffff
-function generateControlPoints(numPoints, range) {
+// Create the rocky material using vertex colors
+const rockyMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
+
+// Generate the rocky pattern using vertex colors
+const rockyColors = [];
+const baseColor = new THREE.Color(0xd2b48c); 
+
+for (let i = 0; i < rockyGeometry.attributes.position.count; i++) {
+    
+    const variation = (Math.random() - 0.5) * 0.2; 
+    const rockyColor = baseColor.clone().offsetHSL(0, 0, variation); 
+    rockyColors.push(rockyColor.r, rockyColor.g, rockyColor.b);
+}
+
+// Assign the colors to the geometry
+rockyGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rockyColors, 3));
+
+// Create the rocky plane mesh
+const rockyPlane = new THREE.Mesh(rockyGeometry, rockyMaterial);
+
+// Position the plane so it appears behind the track
+rockyPlane.rotation.x = -Math.PI / 2; 
+rockyPlane.position.y = -0.1; 
+
+// Add the rocky plane to the scene
+scene.add(rockyPlane);
+
+// Generate elliptical control points with random kinks
+function generateEllipseWithKinks(numPoints, radiusX, radiusZ, kinkFactor) {
     const points = [];
     for (let i = 0; i < numPoints; i++) {
-        const x = Math.random() * range - range / 2;
-        const z = Math.random() * range - range / 2;
+        const angle = (i / numPoints) * Math.PI * 2;
+        let x = radiusX * Math.cos(angle);
+        let z = radiusZ * Math.sin(angle);
+
+        // Introduce random kinks and bends
+        x += (Math.random() - 0.5) * kinkFactor;
+        z += (Math.random() - 0.5) * kinkFactor;
+
         points.push(new THREE.Vector3(x, 0, z));
     }
     return points;
 }
 
-// Function to ensure bends are within a range of 60 to 160 degrees
-function adjustControlPoints(points, minTurnAngle, maxTurnAngle) {
-    const adjustedPoints = [points[0]];
-
-    for (let i = 1; i < points.length - 1; i++) {
-        const prevPoint = points[i - 1];
-        const currPoint = points[i];
-        const nextPoint = points[i + 1];
-
-        const prevDir = new THREE.Vector3().subVectors(currPoint, prevPoint).normalize();
-        const nextDir = new THREE.Vector3().subVectors(nextPoint, currPoint).normalize();
-
-        const angle = prevDir.angleTo(nextDir);
-
-        if (angle < minTurnAngle || angle > maxTurnAngle) {
-            // Insert a midpoint if the angle is too sharp or too wide
-            const midPoint = new THREE.Vector3().addVectors(prevPoint, nextPoint).multiplyScalar(0.5);
-            adjustedPoints.push(midPoint);
-        } else {
-            adjustedPoints.push(currPoint);
-        }
-    }
-
-    adjustedPoints.push(points[points.length - 1]);
-    return adjustedPoints;
+function createPothole() {
+    const geometry = new THREE.CylinderGeometry(5, 5, 2, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0x333333 });
+    const pothole = new THREE.Mesh(geometry, material);
+    pothole.rotation.x = -Math.PI / 2; 
+    return pothole;
 }
 
-// Generate control points
-const numPoints = 10;
-const controlPoints = generateControlPoints(numPoints, 200);
+function createBadTerrain() {
+    const geometry = new THREE.PlaneGeometry(15, 15);
+    const material = new THREE.MeshBasicMaterial({ color: 0x884422 });
+    const badTerrain = new THREE.Mesh(geometry, material);
+    badTerrain.rotation.x = -Math.PI / 2; 
+    return badTerrain;
+}
 
-// Convert degrees to radians
-const minTurnAngle = 60 * (Math.PI / 180); // 60 degrees in radians
-const maxTurnAngle = 160 * (Math.PI / 180); // 160 degrees in radians
+function createSpeedBoostPad() {
+    const geometry = new THREE.PlaneGeometry(20, 10); 
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.7 }); // Green for speed boost
+    const boostPad = new THREE.Mesh(geometry, material);
+    boostPad.rotation.x = -Math.PI / 2; 
+    return boostPad;
+}
 
-// Adjust control points to ensure bends are within the specified range
-const adjustedControlPoints = adjustControlPoints(controlPoints, minTurnAngle, maxTurnAngle);
+// Generate control points for the track
+const numPoints = 20;
+const radiusX = 200;
+const radiusZ = 100;
+const kinkFactor = 50; 
+
+const controlPoints = generateEllipseWithKinks(numPoints, radiusX, radiusZ, kinkFactor);
 
 // Create a closed loop curve for the track
-const curve = new THREE.CatmullRomCurve3(adjustedControlPoints, true);
-curve.tension = 0.5; // Smoothing factor for curves
+const curve = new THREE.CatmullRomCurve3(controlPoints, true);
+curve.tension = 0.5; 
 
-// Create road geometry along the curve with smooth transitions
+// Create road geometry along the curve
 const roadWidth = 20;
 const roadSegments = 100;
 const roadGeometry = new THREE.BufferGeometry();
 const roadVertices = [];
 const roadIndices = [];
-
-// Increased amplitude for the hills
-const hillAmplitude = 20;
-const hillFrequency = 1; // Frequency of the hills
 
 for (let i = 0; i <= roadSegments; i++) {
     const t = i / roadSegments;
@@ -161,13 +185,8 @@ for (let i = 0; i <= roadSegments; i++) {
     const tangent = curve.getTangentAt(t).normalize();
     const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
 
-    // Calculate yOffset for smooth hills and valleys
-    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
-
     const leftPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
     const rightPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
-    leftPoint.y += yOffset;
-    rightPoint.y += yOffset;
 
     roadVertices.push(leftPoint.x, leftPoint.y, leftPoint.z);
     roadVertices.push(rightPoint.x, rightPoint.y, rightPoint.z);
@@ -190,8 +209,8 @@ const road = new THREE.Mesh(roadGeometry, roadMaterial);
 scene.add(road);
 
 // Create border and middle lines
-const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
-const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); // White dashed line
+const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); 
+const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); 
 
 const leftBorderPoints = [];
 const rightBorderPoints = [];
@@ -203,15 +222,9 @@ for (let i = 0; i <= roadSegments; i++) {
     const tangent = curve.getTangentAt(t).normalize();
     const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
 
-    // Apply the same increased amplitude to the borders and middle line
-    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
-
     const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
     const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
     const middlePoint = point.clone();
-    leftBorderPoint.y += yOffset;
-    rightBorderPoint.y += yOffset;
-    middlePoint.y += yOffset;
 
     leftBorderPoints.push(leftBorderPoint);
     rightBorderPoints.push(rightBorderPoint);
@@ -226,68 +239,136 @@ const leftBorder = new THREE.Line(leftBorderGeometry, borderMaterial);
 const rightBorder = new THREE.Line(rightBorderGeometry, borderMaterial);
 const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial);
 
-middleLine.computeLineDistances(); // Required for dashed lines to appear correctly
+middleLine.computeLineDistances(); 
 
 scene.add(leftBorder);
 scene.add(rightBorder);
 scene.add(middleLine);
 
-// Create a car object
-// const carGeometry = new THREE.BoxGeometry(2, 2, 4);
-// const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// const car = new THREE.Mesh(carGeometry, carMaterial);
-// scene.add(car);
+// Create the start/finish line geometry
+const lineWidth = roadWidth;
+const lineLength = 2; 
+const lineGeometry = new THREE.PlaneGeometry(lineWidth, lineLength);
 
-// let carPosition = 0;
+// Create a material for the line (white color)
+const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
-// Create border and middle lines
-/* const borderMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for borders
-const middleLineMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 3, gapSize: 1 }); // White dashed line
+// Create the start/finish line mesh
+const startFinishLine = new THREE.Mesh(lineGeometry, lineMaterial);
 
-const leftBorderPoints = [];
-const rightBorderPoints = [];
-const middleLinePoints = [];
+// Position the line at the starting point of the track
+const startPoint = curve.getPointAt(0); 
+const startTangent = curve.getTangentAt(0).normalize(); 
 
-for (let i = 0; i <= roadSegments; i++) {
-    const t = i / roadSegments;
+// Position the line at the start point
+startFinishLine.position.set(startPoint.x, startPoint.y + 0.01, startPoint.z); 
+
+// Rotate the line to align it with the road
+const lineRotationAngle = Math.atan2(startTangent.z, startTangent.x);
+startFinishLine.rotation.y = -lineRotationAngle; 
+startFinishLine.rotation.x = -Math.PI / 2; 
+
+// Add the start/finish line to the scene
+scene.add(startFinishLine);
+
+const potholes = [];
+const badTerrains = [];
+const numPotholes = 5;
+const numBadTerrains = 3;
+
+for (let i = 0; i < numPotholes; i++) {
+    const t = Math.random(); 
     const point = curve.getPointAt(t);
-    const tangent = curve.getTangentAt(t).normalize();
-    const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
-
-    // Apply the same increased amplitude to the borders and middle line
-    const yOffset = Math.sin(t * Math.PI * hillFrequency) * hillAmplitude;
-
-    const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
-    const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
-    const middlePoint = point.clone();
-    leftBorderPoint.y += yOffset;
-    rightBorderPoint.y += yOffset;
-    middlePoint.y += yOffset;
-
-    leftBorderPoints.push(leftBorderPoint);
-    rightBorderPoints.push(rightBorderPoint);
-    middleLinePoints.push(middlePoint);
+    const pothole = createPothole();
+    pothole.position.set(point.x, point.y + 0.1, point.z); 
+    potholes.push(pothole);
+    scene.add(pothole);
 }
 
-const leftBorderGeometry = new THREE.BufferGeometry().setFromPoints(leftBorderPoints);
-const rightBorderGeometry = new THREE.BufferGeometry().setFromPoints(rightBorderPoints);
-const middleLineGeometry = new THREE.BufferGeometry().setFromPoints(middleLinePoints);
+for (let i = 0; i < numBadTerrains; i++) {
+    const t = Math.random(); 
+    const point = curve.getPointAt(t);
+    const badTerrain = createBadTerrain();
+    badTerrain.position.set(point.x, point.y + 0.1, point.z); 
+    badTerrains.push(badTerrain);
+    scene.add(badTerrain);
+}
 
-const leftBorder = new THREE.Line(leftBorderGeometry, borderMaterial);
-const rightBorder = new THREE.Line(rightBorderGeometry, borderMaterial);
-const middleLine = new THREE.Line(middleLineGeometry, middleLineMaterial); */
+function checkCollision(car, obstacle) {
+    const distance = car.position.distanceTo(obstacle.position);
+    return distance < 5; 
+}
 
-middleLine.computeLineDistances(); // Required for dashed lines to appear correctly
+function handleCollisions() {
+    potholes.forEach((pothole) => {
+        if (checkCollision(carOne, pothole)) {
+            uSpeed = Math.max(uSpeed - 0.1, 0); 
+            playSound('hitBorder'); 
+        }
+    });
 
-scene.add(leftBorder);
-scene.add(rightBorder);
-scene.add(middleLine);
+    badTerrains.forEach((badTerrain) => {
+        if (checkCollision(carOne, badTerrain)) {
+            uSpeed = Math.max(uSpeed - 0.05, 0); 
+            playSound('hitBorder'); 
+        }
+    });
+}
 
-// Create a car object
-// const carGeometry = new THREE.BoxGeometry(2, 2, 4);
-// const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// const car = new THREE.Mesh(carGeometry, carMaterial);
-// scene.add(car);
+function checkBorderCollision(car, roadWidth) {
+    const carPos = new THREE.Vector2(car.position.x, car.position.z);
+
+    let closestDistance = Infinity;
+    let closestNormal = null;
+
+    for (let i = 0; i <= roadSegments; i++) {
+        const t = i / roadSegments;
+        const point = curve.getPointAt(t);
+        const tangent = curve.getTangentAt(t).normalize();
+        const normal = new THREE.Vector3(-tangent.z, 0, tangent.x);
+        
+        const leftBorderPoint = point.clone().add(normal.clone().multiplyScalar(roadWidth / 2));
+        const rightBorderPoint = point.clone().add(normal.clone().multiplyScalar(-roadWidth / 2));
+
+        const leftBorderPos = new THREE.Vector2(leftBorderPoint.x, leftBorderPoint.z);
+        const rightBorderPos = new THREE.Vector2(rightBorderPoint.x, rightBorderPoint.z);
+
+        const leftDistance = carPos.distanceTo(leftBorderPos);
+        const rightDistance = carPos.distanceTo(rightBorderPos);
+
+        if (leftDistance < closestDistance) {
+            closestDistance = leftDistance;
+            closestNormal = normal;
+        }
+
+        if (rightDistance < closestDistance) {
+            closestDistance = rightDistance;
+            closestNormal = normal.negate();
+        }
+    }
+
+    if (closestDistance < roadWidth / 2) {
+        return closestNormal;
+    }
+
+    return null;
+}
+
+const speedBoostPads = [];
+const numBoostPads = 5; 
+
+for (let i = 0; i < numBoostPads; i++) {
+    const t = Math.random(); 
+    const point = curve.getPointAt(t);
+    const tangent = curve.getTangentAt(t).normalize();
+    
+    
+    const offset = tangent.clone().multiplyScalar((Math.random() - 0.5) * roadWidth * 0.66); 
+    const boostPad = createSpeedBoostPad();
+    boostPad.position.set(point.x + offset.x, point.y + 0.01, point.z + offset.z); 
+    speedBoostPads.push(boostPad);
+    scene.add(boostPad);
+}
 
 let carPosition = 0;
 
@@ -360,7 +441,9 @@ carTwo = createCar(false);
 scene.add(carTwo);
 let carPositionTwo = 0.02;
 // Set camera position
-camera.position.set(0, 150, 20);
+
+camera.position.set(0, 200, 0);
+
 camera.lookAt(0, 0, 0);
 
 
@@ -384,10 +467,38 @@ function moveUser(tanXD, tanZD, timeS){
     on timeS delta*/
     const deltaX = tanXD * uSpeed * timeS;
     const deltaZ = tanZD * uSpeed * timeS;
-
     return [deltaX, deltaZ];
-
 }
+
+let boostActive = false;
+let boostEndTime = 0;
+const boostDuration = 3; 
+const boostMultiplier = 2; 
+
+function isOnSpeedBoostPad(car, boostPad) {
+    const carPos = new THREE.Vector2(car.position.x, car.position.z);
+    const padPos = new THREE.Vector2(boostPad.position.x, boostPad.position.z);
+    const distance = carPos.distanceTo(padPos);
+    const padWidth = 10; 
+    return distance < padWidth; 
+}
+
+function handleBoostPads() {
+  if (!boostActive) {
+      speedBoostPads.forEach((boostPad) => {
+          if (isOnSpeedBoostPad(carOne, boostPad)) {
+              boostActive = true;
+              originalSpeed = uSpeed; 
+              uSpeed *= boostMultiplier; 
+              boostEndTime = performance.now() + boostDuration * 1000; 
+              playSound('speedUp');
+          }
+      });
+  } else {
+      if (performance.now() >= boostEndTime) {
+          uSpeed = originalSpeed; 
+          boostActive = false;
+      }
 
 // Calculates rotation of cars
 // temporary out while fixing a general one
@@ -426,13 +537,15 @@ function animate() {
     if (carPosition === 0) {
         playSound('readySteadyGo');
     }
+}
 
+// Render the scene
+function animate() {
     requestAnimationFrame(animate);
-
-    // Move the car along the curve
-    const timeStep = 0.1;
-
+    renderer.render(scene, camera);
+    const timeStep = 0.0001;
     timeUser += timeStep;
+
     // Handle user car move
     if (timeUser < 2 * timeStep){ // Initial position
         iniPos = iniUserPos(curve, timeUser);
@@ -442,6 +555,7 @@ function animate() {
         gCompCar['tanZOld'][0] = gCompCar['tanZ'][0];
         const iniRot = Math.acos(gCompCar['tanZ'][0]);
         if (gCompCar['tanX'][0] > 0) {
+
             carOne.rotateZ(iniRot);
         } else {
             carOne.rotateZ(-iniRot);
@@ -452,36 +566,18 @@ function animate() {
         deltas = moveUser(gCompCar['tanX'][0], gCompCar['tanZ'][0], timeStep);
         carRotate(0);
         const carPoint = carOne.position;
+
         carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
 
-    }
-
-    // if (timeOne * uSpeed > 1) timeOne = 0;
-    // const carPoint = curve.getPointAt(timeOne * uSpeed);
-    // const carYOffset = Math.sin(timeOne * uSpeed * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    // carOne.position.set(carPoint.x, carPoint.y + carYOffset + 1, carPoint.z); // Slightly above the road     
-
+    }   
 
     // Move the car two along the curve
     carPositionTwo += 0.001;
     if (carPositionTwo > 1) carPositionTwo = 0;
-    // iniPos = iniUserPos(curve, carPositionTwo);
-    // carRotate(1);
     const carPointTwo = curve.getPointAt(carPositionTwo);
     iniPos = iniUserPos(curve, carPositionTwo);
     const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
     carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
- 
-
-    // const carPointTwo = curve.getPointAt(carPositionTwo);
-    // const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    // carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
-
-    // // Dynamically adjust the camera's height to ensure the car is always visible
-    // let cameraHeight = car.position.y + 50;
-    // if (cameraHeight < 50) cameraHeight = 50; // Minimum height to avoid the camera going too low
-    // camera.position.set(carPoint.x, cameraHeight, carPoint.z + 100);
-    // camera.lookAt(car.position);
 
     /*
     // Check if the car is hitting the border
@@ -497,22 +593,39 @@ function animate() {
     } else {
         carPosition += 0.001;
     }
+
+    handleCollisions();
     
-    // Slow down the car
+    handleBoostPads();
 
-    if (carPosition > 0.5 && carPosition < 0.51) {
-        playSound('slowDown'); // Play slow-down sound
-        carPosition -= 0.005; // Slow down for demonstration
-    } else {
-        carPosition -= 0.001;
-    }
-    */
+    // Border collision check
+    const collisionNormal = checkBorderCollision(carOne, roadWidth);
+if (collisionNormal) {
+    const velocity = new THREE.Vector2(tanX, tanZ);
+    const normal2D = new THREE.Vector2(collisionNormal.x, collisionNormal.z);
+    const reflectedVelocity = velocity.clone().sub(normal2D.clone().multiplyScalar(2 * velocity.dot(normal2D)));
+    tanX = reflectedVelocity.x;
+    tanZ = reflectedVelocity.y;
 
-    // Render scene normally
-    renderer.render(scene, camera);
+    uSpeed = Math.max(uSpeed - 0.5, 0); 
+    playSound('hitBorder'); 
 }
-animate();
 
+    // Keep the car within the bounds of the curve
+    if (carPositionTwo > 1) {
+        carPositionTwo = 0;
+    }
+    if (timeUser > 1) {
+        timeUser = 0;
+    }
+
+    const carPointTwo = curve.getPointAt(carPositionTwo);
+    carTwo.position.set(carPointTwo.x, carPointTwo.y, carPointTwo.z);
+
+    //camera.lookAt(carOne.position);
+}
+
+animate();
 
 /* 
 if (car.position.x > roadWidth / 2 || car.position.x < -roadWidth / 2) {
