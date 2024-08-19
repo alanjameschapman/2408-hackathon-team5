@@ -1,10 +1,10 @@
 # 🏁 *RETRO RACERS* 🏁
 
-Responsive Screenshot(s) here
+<img width="947" alt="Screenshot 2024-08-19 at 11 41 59" src="https://github.com/user-attachments/assets/599a2c12-650f-46d2-954e-d7573aba32f6">
 
-Project Overview
+Retro Racers is a simple racing game developed during Code Institute's August Hackathon, themed "Pixel Pioneers". It is a laptop/desktop game, whereby the car is controlled using a keyboard.
 
-Live deployment link can be found [here](TBC).
+The live deployed site can be found [here](https://alanjameschapman.github.io/2408-hackathon-team5/).
 
 Please use GitHub's burger bun to navigate between sections.
 
@@ -36,38 +36,31 @@ Once the game was chosen, existing online games were researched to help identify
 
 [Lucidchart](https://www.lucidchart.com) was used to structure the site navigation as shown in the user flow diagram below. This was later developed into wireframes - see the Skeleton section.
 
-![user-flow](/docs/wireframes/user-flow.svg)
+![Retro Racer Flow](https://github.com/user-attachments/assets/80c282c7-0835-4cd0-9078-9fcbdd65d7df)
 
 ## Skeleton
 
 ### Interface Design
 
-The user flow diagram helped to develop wireframes for each page using [Balsamiq](https://balsamiq.com/). A laptop-first approach was used, with subsequent layouts for larger screens developed thereafter.
+A laptop-first approach was used, with subsequent layouts for larger screens developed thereafter.
 
-#### Wireframes
-
-**Concept Design**
+#### Wireframe
 
 A concept design was created during the brainstorming phase, showing possible track layout and game features for development.
 
 <img width="717" alt="Screenshot 2024-08-17 at 13 18 48" src="https://github.com/user-attachments/assets/b711f6e0-8002-4871-b0e6-c28f136c8da9">
 
-| Page | Wireframe |
-| - | - |
-| Index | |
-| help | |
-| High Scores | |
-| Race | |
+It was not necessary to create wireframes for such simple page layouts.
 
 ### Navigation Design
 
-Whilst developing these wireframes, it was concluded that site navigation would be best served by a navbar on each page, with the following links: home, race, settings and high scores.
+To give a retro feel and simple site layout, the home screen uses a gearshift image and links to each page. Each page has a link to return to the main menu only. following links: home, race, settings and high scores.
 
 ## Surface
 
 ### Colour schemes
 
-The colour scheme is based on the NES i.e. grey, red, black and grey.
+The colour scheme is based on the NES of greys and red.
 
 ![NES](https://github.com/user-attachments/assets/a3eaa306-a7e6-4f0b-b823-0a5a72f5ac3c)
 
@@ -79,37 +72,57 @@ Press Start 2P from [Google Fonts](https://fonts.google.com/specimen/Press+Start
 
 ## Implemented
 
-### Navbar and Footer (all pages)
+### Main menu (index.html)
 
-The navbar and footer are fixed and present on all pages and are responsive to different screen sizes, to make them visible at all times.
-
-| Screenshot |
-| :-: |
-| <img src="https://github.com/alanjameschapman/whiteboard/raw/main/docs/features/navbar-teacher.png" alt="navbar-teacher" width="400"/> |
-
-| Element | Description |
-| - | - |
-| Logo | Link to the home page |
-
-The footer is not fixed to the bottom of the page because it is not necessary to be visible at all times.
-
-### Register (register.html)
-
-The register screen allows the user to register for the site. The user can enter their username, email and password, and click the register button.
+The home page allows the user to navigate around the site using a retro-looking image of a gearshift. Users are greeted by 8 bit music which can be muted if preferred. This mutable music is present on every page.
 
 | Screenshot |
 | :-: |
-| <img src="https://github.com/alanjameschapman/whiteboard/raw/main/docs/features/register.png" alt="register" width="400"/> |
+| <img width="506" alt="Screenshot 2024-08-19 at 12 27 48" src="https://github.com/user-attachments/assets/89a61568-928b-4d72-9ba2-2ce053507995"> |
 
-| Element | Description |
-| - | - |
-| Login link | Link to login |
+### Help (help.html)
+
+The help page gives helpful instructions on gameplay and scoring, as well as a link to return to the main menu.
+
+| Screenshot |
+| :-: |
+| <img width="587" alt="Screenshot 2024-08-19 at 12 32 41" src="https://github.com/user-attachments/assets/6c56d412-17ab-4536-89c3-dfe5c3e4c08c"> |
+
+### Settings (settings.html)
+
+The settings page currently only gives users the ability to change the music, as well as a link to return to the main menu.
+
+| Screenshot |
+| :-: |
+| <img width="526" alt="Screenshot 2024-08-19 at 12 38 17" src="https://github.com/user-attachments/assets/394a3b44-f31d-4a55-916f-c68dca2e6a4b"> |
+
+### High Scores (highscores.html)
+
+The high scores page gives the top 10 scores, as well as a link to return to the main menu.
+
+| Screenshot |
+| :-: |
+| <img width="534" alt="Screenshot 2024-08-19 at 12 39 05" src="https://github.com/user-attachments/assets/33d88de4-3522-449e-b5a8-ee7b98a26e60"> |
+
+### Race (race.html)
+
+The race page gives helpful instructions on gameplay and scoring, as well as a link to return to the main menu.
+
+| Screenshot |
+| :-: |
+| <img width="619" alt="Screenshot 2024-08-19 at 12 43 53" src="https://github.com/user-attachments/assets/53f2caee-82a8-4584-b498-766907d81620"> |
 
 ## Not implemented...yet
 
-| Issue# | User Story | Wireframe |
-| :-: | :-: | :-: |
-| [24](https://github.com/alanjameschapman/whiteboard/issues/24) | As a user I can search for content so that I can quickly find help on any given topic. | ![wireframe](/docs/features/search.png) |
+### Settings (settings.html)
+
+The settings page will eventually gives users the ability to change the difficulty level and car colour.
+
+| Screenshot |
+| :-: |
+| <img width="517" alt="Screenshot 2024-08-19 at 12 34 06" src="https://github.com/user-attachments/assets/11904477-ca55-4760-887c-ba1737778a73"> |
+
+For other features not yet implemented, see the project's open issues [here](https://github.com/users/alanjameschapman/projects/7/views/1)
 
 ## Technologies, Languages & Programs Used
 
@@ -129,7 +142,7 @@ The register screen allows the user to register for the site. The user can enter
 
 ## Deployment, Development & Version Control
 
-Each software developer on the team used their own development environment individual branch divergent from main from the start and have communicated via Slack to collaborate, pitch ideas, fix bugs and talk about relevant Pull Requests. Regular commits and pushes to Github have been employed to be able to track and trace the development process of the web application.
+Each software developer on the team used their own development environment and individual branch (using their initials for ID) divergent from main from the start and have communicated via Slack to collaborate, pitch ideas, fix bugs and talk about relevant Pull Requests. Regular commits and pushes to Github have been employed to be able to track and trace the development process of the web application.
 
 ### Local Deployment
 
@@ -162,28 +175,11 @@ The procedure for deployment followed the "Creating your site" steps provided in
 
 User Stories were tracked throughout the project as [GitHub issues](https://github.com/users/alanjameschapman/projects/5). Links are provided to see the development notes and screenshots for each.
 
-#### Users 
-
-| As a user I can... | ...so that I can... | Checked | Issue# |
-| :- | :- | :-: | :-: |
-| view all posts summarized | browse topics | &check; | [23](https://github.com/alanjameschapman/whiteboard/issues/23) |
-
-### User Input Validation
-
-User inputs were validated for various incorrect inputs throughout the project. Results for the final site are shown below.
-
-| Page | Input | Test | Outcome | Screenshot | Pass |
-| :-: | :-: | :-: | :-: | :-: | :-: |
-| [register](https://whiteboard-app-742f545f1848.herokuapp.com/accounts/signup/) | username | no username | prompt to fill in field | ![register-nousername](/docs/testing/register-nousername.png) | &check; |
-
 ### Responsiveness
 
 The responsiveness to different screen sizes was checked throughout the project. Results for MVP and final site are shown below, the main visual difference being fonts.
 
-| Stage | Laptop | Desktop
-| :-: | :-: | :-: |
-| MVP | ![mvplaptop](/docs/testing/response/mvplaptop.png) | ![mvpdesktop](/docs/testing/response/mvpdesktop.png)
-| Final | ![finallaptop](/docs/testing/response/finallaptop.png) | ![finaldesktop](/docs/testing/response/finaldesktop.png)
+<img width="947" alt="Screenshot 2024-08-19 at 11 41 59" src="https://github.com/user-attachments/assets/599a2c12-650f-46d2-954e-d7573aba32f6">
 
 ### Browser Compatibility
 
@@ -198,21 +194,7 @@ Browser compatibility was tested using this [MDN guide](https://developer.mozill
 
 ### Bugs
 
-Bugs were tracked throughout the project as GitHub issues. Links are provided to see the development notes and screenshots for each.
-
-#### Resolved
-
-| Issue | Problem | Screenshot | Solution | Screenshot |
-| :-: | :-: | :-: | :-: | :-: |
-| [#29](https://github.com/alanjameschapman/whiteboard/issues/29) | Edit button not populating comment box for editing | ![#29](/docs/issues/29-1.png) | Javascript amended from "id_body" to "id_content | ![#29](/docs/issues/29-2.png) |
-
-#### Unresolved
-
-The only unresolved bug is the password reset not working. This does not affect the website functionality because the admin can reset passwords manually.
-
-| Issue# | Problem | Screenshot | Comment |
-| :-: | :-: | :-: | :-: |
-[36](https://github.com/alanjameschapman/whiteboard/issues/36) | password reset not working | ![#36](/docs/issues/36-1.png) | This bug and associated [Issue#7](https://github.com/alanjameschapman/whiteboard/issues/7) for password reset moved to backlog for future development. |
+Bugs were tracked throughout the project as GitHub issues.
 
 ### Lighthouse
 
@@ -226,11 +208,9 @@ Page | Laptop | Desktop | Comment |
 
 #### HTML
 
-[W3C Markup Validation Service](https://validator.w3.org/) was used to validate the HTML. The Django template language cannot be validated by URI using the W3C validator, so the rendered HTML was copied and pasted into the direct input form for each page.
+[W3C Markup Validation Service](https://validator.w3.org/) was used to validate the HTML.
 
-| Page | W3C URL | Screenshot | Notes | Pass |
-| :-: | :-: | :-: | :-: | :-: |
-| [register](/registration/signup.html) | [W3C](https://validator.w3.org/nu/?doc=https%3A%2F%2Fwhiteboard-app-742f545f1848.herokuapp.com%2Faccounts%2Fsignup%2F) | ![register](/docs/testing/register.png) | Errors relate to built-in Django form and don't affect UX or functionality. | &check; |
+<img width="756" alt="Screenshot 2024-08-19 at 13 00 12" src="https://github.com/user-attachments/assets/14736afe-1fa3-491c-8d08-6589c1a1550f">
 
 #### CSS
 
@@ -268,8 +248,8 @@ CSS was validated by direct input using [jigsaw W3C Validation Service](https://
 
 ## Media
 
-The favicon is courtesy of [Somebody via Flaticon or similar](link here).
+The favicon is courtesy of <a href="https://www.flaticon.com/free-icons/racer" title="racer icons">Freepik - Flaticon</a>.
 
 ## Acknowledgments
 
-This project was created in collaboration by [Team Name](https://hackathon.codeinstitute.net/teams/379/): Alan Chapman, Efren Reyes, Mark Butler, Tamas Gavlider.
+This project was created in collaboration by [Retro Racers](https://hackathon.codeinstitute.net/teams/379/): Alan Chapman, Efren Reyes, Mark Butler, Tamas Gavlider and Mick Kavanagh.
