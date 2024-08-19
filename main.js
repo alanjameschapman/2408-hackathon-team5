@@ -499,6 +499,8 @@ function handleBoostPads() {
           uSpeed = originalSpeed; 
           boostActive = false;
       }
+    }
+}
 
 // Calculates rotation of cars
 // temporary out while fixing a general one
@@ -569,20 +571,11 @@ function animate() {
 
         carOne.position.set(carPoint.x + deltas[0], carPoint.y, carPoint.z + deltas[1]); // Slightly above the road    
 
-    }   
+    }
 
-    // Move the car two along the curve
-    carPositionTwo += 0.001;
-    if (carPositionTwo > 1) carPositionTwo = 0;
-    const carPointTwo = curve.getPointAt(carPositionTwo);
-    iniPos = iniUserPos(curve, carPositionTwo);
-    const carYOffsetTwo = Math.sin(carPositionTwo * Math.PI * hillFrequency) * hillAmplitude; // Match the yOffset
-    carTwo.position.set(carPointTwo.x, carPointTwo.y + carYOffsetTwo + 1, carPointTwo.z); // Slightly above the road
-
-    /*
     // Check if the car is hitting the border
     const roadWidthHalf = roadWidth / 2;
-    if (car.position.x > roadWidthHalf || car.position.x < -roadWidthHalf) {
+    if (carOne.position.x > roadWidthHalf || carOne.position.x < -roadWidthHalf) {
         playSound('hitBorder'); // Play border collision sound
     };
 
