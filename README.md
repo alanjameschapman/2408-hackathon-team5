@@ -198,11 +198,7 @@ Bugs were tracked throughout the project as GitHub issues.
 
 ### Lighthouse
 
-The WAVE Web Accessibility Evaluation Tool was used throughout the project to check for accessibility issues. Lighthouse was then used to test the performance, accessibility, best practices and SEO of the deployed site. The PWA score not showing is a [known feature](https://stackoverflow.com/questions/60603960/why-lighthouse-pwa-score-is-blank-even-though-the-page-is-audited).
-
-Page | Laptop | Desktop | Comment |
-| :-: | :-: | :-: | :-: |
-| [register](https://whiteboard-app-742f545f1848.herokuapp.com/accounts/signup/) | ![register-mobile](/docs/testing/lighthouse/register-mobile.png) | ![register-desktop](/docs/testing/lighthouse/register-desktop.png) | None |
+The WAVE Web Accessibility Evaluation Tool was used throughout the project to check for accessibility issues. Lighthouse was then used to test the performance, accessibility, best practices and SEO of the deployed site.
 
 ### Code Validation
 
@@ -223,14 +219,6 @@ CSS was validated by direct input using [jigsaw W3C Validation Service](https://
             alt="Valid CSS!"/>
     </a>
 </p>
-
-#### JavaScript
-
-[jshint](https://jshint.com/) was used to validate the only custom JavaScript file, [comments.js](/staticfiles/js/comments.js), used to edit, delete and approve comments.
-
-| File | Screenshot | Description | Pass |
-| :-: | :-: | :-: | :-: |
-| [comments](/staticfiles/js/comments.js) | ![comments.js](/docs/testing/comments-js.png) | One warning about a function 'getCookie' declared in a loop referencing an outer scoped variable. Reviewed but syntax deemed not difficult to understand. | &check; |
 
 # Agile
 
